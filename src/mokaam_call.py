@@ -3,9 +3,12 @@
 import requests
 import json
 import sqlite3
+from preferences import get_preference
 
-region_id = 10000002
+region_id = get_preference("region_id")
 api_url = f"https://mokaam.dk/API/market/all?regionid={region_id}"
+
+print(f"Pulling Mokaam API for region {region_id}")
 
 response = requests.get(api_url)
 
