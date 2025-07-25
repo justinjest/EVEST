@@ -4,7 +4,8 @@ import requests
 import json
 import sqlite3
 
-api_url = "https://mokaam.dk/API/market/all?regionid=10000002"
+region_id = 10000002
+api_url = f"https://mokaam.dk/API/market/all?regionid={region_id}"
 
 response = requests.get(api_url)
 
