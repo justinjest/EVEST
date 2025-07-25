@@ -21,7 +21,3 @@ if response.status_code == 200:
     print(f"Data has been written to {output_json}")
 else:
     print(f"Error: {response.status_code}")
-
-
-def __main__():
-    print("Hello, world")
