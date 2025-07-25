@@ -1,6 +1,6 @@
 import configparser
 
-config_file_path = "../data/preferences.ini"
+config_file_path = "./data/preferences.ini"
 
 
 def save_preferences(config_file_path, preferences):

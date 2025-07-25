@@ -1,8 +1,9 @@
 .DS_Store
 .idea
 *.log
-tmp/
+secret.py
 
+tmp/
 bin/
 venv/
 .vscode/
