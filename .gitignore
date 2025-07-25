@@ -13,3 +13,4 @@ pyvenv.cfg
 data/fuzzworks.json
 data/mokaam.json
 data/preferences.ini
+src/__pycache__/
