@@ -11,3 +11,4 @@ lib64/
 lib64
 pyvenv.cfg
 data/fuzzworks.json
+data/mokaam.json
