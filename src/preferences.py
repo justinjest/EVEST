@@ -20,6 +20,9 @@ def load_preferences(file_path=config_file_path):
         "time": config.get("Preferences", "time"),
         "market_size": config.getint("Preferences", "market_size"),
         "market_volume": config.getint("Preferences", "market_volume"),
+        "sales_tax": config.getfloat("Preferences", "sales_tax"),
+        "buy_broker_fee": config.getfloat("Preferences", "buy_broker_fee"),
+        "sell_broker_fee": config.getfloat("Preferences", "sell_broker_fee"),
     }
     return preferences
 

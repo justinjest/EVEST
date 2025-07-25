@@ -10,6 +10,9 @@ if not os.path.exists("../data/preferences.ini"):
         "time": "month",
         "market_size": "1000000000",
         "market_volume": "300",
+        "sales_tax": "0.033",
+        "buy_broker_fee": "0.015",
+        "sell_broker_fee": "0.015",
     }
     save_preferences("../data/preferences.ini", preferences)
 else:
