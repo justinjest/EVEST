@@ -83,6 +83,7 @@ def startup_databases():
     if not os.path.exists(historical_db_path):
         print("Unable to find historical table, now creating")
         create_historical_table()
+        populate_historical_database()
         with open(timestamp, "w") as file:
             file.write(str(today))
     else:
@@ -99,9 +100,10 @@ def startup_databases():
             print("Historical table cleared.")
             with open(timestamp, "w") as file:
                 file.write(str(today))
+            populate_historical_database()
 
 
-def create_historical_database():
+def populate_historical_database():
     res = mokaam_call()
     if res.error is not None:
         raise Exception(f"{res.error}")
@@ -111,7 +113,7 @@ def create_historical_database():
         post_historical_data(historical_db_path, **res.response[key].as_post_data())
 
 
-def create_live_database():
+def populate_live_database():
     res = fuzzworks_call()
     if res.error is not None:
         raise Exception(f"{res.error}")
@@ -125,8 +127,7 @@ def create_live_database():
 def __main__():
     init()
     startup_databases()
-    create_historical_database()
-    create_live_database()
+    populate_live_database()
     historical_size = get_db_size(historical_db_path, "historical_db")
     for i in range(0, historical_size):
         res = get_historical_item(i)

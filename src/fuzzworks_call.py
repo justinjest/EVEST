@@ -64,7 +64,7 @@ def fuzzworks_call() -> Response:
     type_ids = get_typeids_as_string(historical_db_path)
     print(type_ids)
 
-    api_url = f"https://market.fuzzwork.co.uk/aggregates/?region={station_id}&types={type_ids}"
+    api_url = f"https://market.fuzzwork.co.uk/aggregates/?region={station_id}"
 
     print(f"Pulling Fuzzwork API for station {station_id}")
 
