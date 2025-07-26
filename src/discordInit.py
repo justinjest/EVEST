@@ -12,26 +12,46 @@
 '''
 
 import discord
-from discord.ext import commands
+from discord.ext import tasks
 from secret import discordToken
 
+
+class MyClient(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # an attribute we can access from our task
+        self.counter = 0
+        self.message = None
+
+    async def setup_hook(self) -> None:
+        # start the task to run in the background
+        self.my_background_task.start()
+
+    async def on_ready(self):
+        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print('------')
+
+    async def get_message(self, message):
+        if message == None:
+            pass
+        else:
+            self.message = message
+
+    @tasks.loop(seconds=60)  # task runs every 60 seconds
+    async def my_background_task(self):
+        channel = self.get_channel(1398417004611899442)  # channel ID goes here
+        self.counter += 1
+        if (self.message != None):
+            await channel.send(self.message)
+            self.message = None
+        await channel.send(self.counter)
+
+    @my_background_task.before_loop
+    async def before_my_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
+
 def bot_init():
-    class MyClient(discord.Client):
-        async def on_ready(self):
-            print('Logged on as', self.user)
-
-        async def on_message(self, message):
-            # don't respond to ourselves
-            if message.author == self.user:
-                return
-
-            if message.content == 'ping':
-                await message.channel.send('pong')
-
-        async def send_message(self, message_content):
-            await general.send(message_content)
-
     intents = discord.Intents.default()
-    intents.message_content = True
     client = MyClient(intents=intents)
     client.run(discordToken)
