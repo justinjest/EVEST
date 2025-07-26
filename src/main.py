@@ -85,7 +85,7 @@ def __main__():
 
     init()
     startup_databases()
-    #create_historical_database()
+    create_historical_database()
     historical_size = get_db_size(historical_db_path, "historical_db")
     for i in range(0, historical_size):
         res = get_historical_item(i)
