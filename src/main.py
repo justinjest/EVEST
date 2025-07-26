@@ -3,7 +3,7 @@
 import os
 from preferences import save_preferences, load_preferences
 from db_middleware import create_live_table, create_historical_table, post_historical_data
-from db_middleware import get_historical_item
+from db_middleware import get_historical_item, get_db_size
 from mokaam_call import mokaam_call
 from discordInit import bot_init
 
@@ -86,8 +86,11 @@ def __main__():
     init()
     startup_databases()
     #create_historical_database()
-    for i in range(0, 100):
-       print(get_historical_item(i))
+    historical_size = get_db_size(historical_db_path, "historical_db")
+    for i in range(0, historical_size):
+        res = get_historical_item(i)
+        if res != "Not Found":
+            print(res)
     print("Hello, world")
 
 

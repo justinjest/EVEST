@@ -276,7 +276,6 @@ def get_historical_item(typeId: int):
     querey = f"SELECT * from historical_db where typeID = {typeId}"
     try:
         with sqlite3.connect(historical_db_path) as conn:
-            print(f"Opened SQLite database with version {sqlite3.sqlite_version}")
             cursor = conn.cursor()
             result = cursor.execute(querey)
             row = result.fetchone()
@@ -286,6 +285,25 @@ def get_historical_item(typeId: int):
                 return "Not Found"
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
+
+def get_db_size(database_path, database_name) -> int:
+    querey = f"SELECT count(typeID) from {database_name}"
+    try:
+        with sqlite3.connect(database_path) as conn:
+            print(f"Opened SQLite database with version {sqlite3.sqlite_version}")
+            cursor = conn.cursor()
+            result = cursor.execute(querey)
+            print(result)
+            row = result.fetchone()
+            if row:
+                return row[0]
+            else:
+                return "Not Found"
+    except sqlite3.OperationalError as e:
+        print("Failed to open database:", e)
+
+
+    return 0
 
 if __name__ == "__main__":
     drop_db(historical_db_path, "historical_db")
