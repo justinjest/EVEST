@@ -78,7 +78,7 @@ def fuzzworks_call() -> Response:
         types = ",".join(map(str, temparray))
         api_url = api_url_base + types
 
-        print(f"Pulling Fuzzwork API for station {station_id} with types: {types}")
+        print(f"Pulling Fuzzwork API for station {station_id} with type_ids: {types}")
 
         response = requests.get(api_url)
 
@@ -92,10 +92,10 @@ def fuzzworks_call() -> Response:
                     return res
 
                 if isinstance(raw_data, dict):
-                    # If raw_data is a dictionary, assume it's a mapping of typeid to data
-                    data = raw_data
+                    for typeid, stats in raw_data.items():
+                        stats["typeid"] = int(typeid)
+                        all_data.append(stats)
                     print("Transformed data to dictionary")
-                    all_data.extend(data.values())
                 else:
                     print("Raw data is not a dictionary")
                     res.error = "Unexpected response format"
@@ -104,13 +104,10 @@ def fuzzworks_call() -> Response:
                 print("Failed to parse JSON response:", e)
                 res.error = str(e)
                 return res
-        else:
-            res.error = response.status_code
-            print(f"Error: {response.status_code}")
-            return res
 
     if all_data:
-        print(all_data)
+        for item in all_data:
+            print(f"typeid: {item['typeid']} (type: {type(item['typeid'])})")
         adapter = TypeAdapter(dict[int, BuySellStats])
         try:
             res.response = adapter.validate_python(
@@ -134,4 +131,3 @@ if __name__ == "__main__":
     print(res)
     print(res.get_val())
 
-    # Your JSON as string
