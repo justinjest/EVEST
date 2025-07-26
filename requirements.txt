@@ -1,4 +1,20 @@
-requests == "2.32.4"
-json
-sqlite3 == "3.45.1"
-configparser == "7.2.0"
+aiohappyeyeballs==2.6.1
+aiohttp==3.12.14
+aiosignal==1.4.0
+annotated-types==0.7.0
+attrs==25.3.0
+certifi==2025.7.14
+charset-normalizer==3.4.2
+configparser==7.2.0
+discord.py==2.5.2
+frozenlist==1.7.0
+idna==3.10
+multidict==6.6.3
+propcache==0.3.2
+pydantic==2.11.7
+pydantic_core==2.33.2
+requests==2.32.4
+typing-inspection==0.4.1
+typing_extensions==4.14.1
+urllib3==2.5.0
+yarl==1.20.1
