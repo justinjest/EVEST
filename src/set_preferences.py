@@ -1,0 +1,43 @@
+from preferences import save_preferences
+
+station_to_region = {
+    "Jita": {"station_id": 60003760, "region_id": 10000002},
+    "Dodixie": {"station_id": 60011866, "region_id": 10000032},
+    "Amarr VIII": {"station_id": 60008494, "region_id": 10000043},
+}
+
+def input_percentage(prompt):
+    percent = input(prompt).strip().replace("%", "")
+    return float(percent) / 100
+
+def main():
+    print("Choose a station:")
+    for i, name in enumerate(station_to_region):
+        print(f"{i+1}. {name}")
+    choice = int(input("Enter choice number: "))
+    station_name = list(station_to_region.keys())[choice - 1]
+    station_info = station_to_region[station_name]
+
+    time = input("Time period (week/month/quarter/year): ").strip().lower()
+    market_size = input("Market size (ISK moved): ").strip()
+    market_volume = input("Market volume (items moved): ").strip()
+    sales_tax = input_percentage("Sales tax (e.g. 3.5%): ")
+    buy_broker_fee = input_percentage("Buy broker fee (e.g. 2.5%): ")
+    sell_broker_fee = input_percentage("Sell broker fee (e.g. 3.0%): ")
+
+    preferences = {
+        "region_id": str(station_info["region_id"]),
+        "station_id": str(station_info["station_id"]),
+        "time": time,
+        "market_size": market_size,
+        "market_volume": market_volume,
+        "sales_tax": str(sales_tax),
+        "buy_broker_fee": str(buy_broker_fee),
+        "sell_broker_fee": str(sell_broker_fee),
+    }
+
+    save_preferences("./data/preferences.ini", preferences)
+
+if __name__ == "__main__":
+    main()
+
