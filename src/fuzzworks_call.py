@@ -25,8 +25,34 @@ class MarketStats(BaseModel):
 
 
 class BuySellStats(BaseModel):
+    typeid: int
     buy: MarketStats
     sell: MarketStats
+
+    def as_post_data(self) -> dict:
+        return build_live_post_data(self)
+
+
+def build_live_post_data(stats: BuySellStats) -> dict:
+    return {
+        "typeid": stats.typeid,
+        "buyWeightedAverage": stats.buy.weightedAverage,
+        "buyMax": stats.buy.max,
+        "buyMin": stats.buy.min,
+        "buyStdDev": stats.buy.stddev,
+        "buyMedian": stats.buy.median,
+        "buyVolume": stats.buy.volume,
+        "buyOrderCount": stats.buy.orderCount,
+        "buyPercentile": stats.buy.percentile,
+        "sellWeightedAverage": stats.sell.weightedAverage,
+        "sellMax": stats.sell.max,
+        "sellMin": stats.sell.min,
+        "sellStdDev": stats.sell.stddev,
+        "sellMedian": stats.sell.median,
+        "sellVolume": stats.sell.volume,
+        "sellOrderCount": stats.sell.orderCount,
+        "sellPercentile": stats.sell.percentile,
+    }
 
 
 class Response:
@@ -93,9 +119,14 @@ def fuzzworks_call() -> Response:
 
                 if isinstance(raw_data, dict):
                     for typeid, stats in raw_data.items():
-                        stats["typeid"] = int(typeid)
-                        all_data.append(stats)
-                    print("Transformed data to dictionary")
+                        all_data.append(
+                            {
+                                "typeid": int(typeid),  # Convert typeid to integer
+                                "buy": stats["buy"],
+                                "sell": stats["sell"],
+                            }
+                        )
+                        print("Added data to dictionary")
                 else:
                     print("Raw data is not a dictionary")
                     res.error = "Unexpected response format"
@@ -130,4 +161,3 @@ if __name__ == "__main__":
     res = fuzzworks_call()
     print(res)
     print(res.get_val())
-

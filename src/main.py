@@ -7,6 +7,7 @@ from preferences import save_preferences, load_preferences
 from db_middleware import (
     create_live_table,
     create_historical_table,
+    post_live_data,
     post_historical_data,
     drop_db,
 )
@@ -121,7 +122,7 @@ def populate_live_database():
         # We need to call the insert val into database here
         # TK this needs to be batched in a loop into an object and then post to the db all at once.
         print(f"{res.response[key].as_post_data()}")
-        post_historical_data(live_db_path, **res.response[key].as_post_data())
+        post_live_data(live_db_path, **res.response[key].as_post_data())
 
 
 def __main__():
