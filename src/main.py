@@ -79,7 +79,6 @@ def create_historical_database():
         post_historical_data(historical_db_path,
                              **res.response[key].as_post_data())
 
-
 def __main__():
     init()
     startup_databases()
