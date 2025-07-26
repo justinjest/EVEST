@@ -4,6 +4,25 @@ import requests
 import json
 import sqlite3
 from preferences import get_preference
+from pydantic import BaseModel, Field, parse_obj_as, validator
+from typing import Optional, Any
+from datetime import date
+
+class MarketStats(BaseModel):
+    weightedAverage: float
+    max: float
+    min: float
+    stddev: float
+    median: float
+    volume: float
+    orderCount: int
+    percentile: float
+
+
+class BuySellStats(BaseModel):
+    buy: MarketStats
+    sell: MarketStats
+
 
 class Response():
     def __init__(self, response = None, error = None):
@@ -16,8 +35,11 @@ class Response():
             return self.response
         # Neither an error or a response, must be handlded
         raise Exception("InvalidResponse")
+# This will either return valid json, or error for each type id passed to it:w
+#
+def fuzzworks_call() -> Response:
+    TypeMarketStats = dict[int, BuySellStats]
 
-def fuzzworks_call() -> Response():
     res = Response()
     station_id = get_preference("station_id")
     region_id = get_preference("region_id")
@@ -33,7 +55,7 @@ def fuzzworks_call() -> Response():
 
     if response.status_code == 200:
         data = response.json()
-        res.response = data
+        res.response = parse_obj_as(dict[int, BuySellStats], data)
         output_json = "./data/fuzzworks.json"
         with open(output_json, "w") as outfile:
             json.dump(data, outfile, indent=4)
@@ -48,3 +70,5 @@ if __name__ == "__main__":
     res = fuzzworks_call()
     print(res)
     print(res.get_val())
+
+    # Your JSON as string
