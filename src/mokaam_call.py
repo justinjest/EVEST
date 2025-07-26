@@ -7,7 +7,6 @@ from preferences import get_preference
 from pydantic import BaseModel, Field, parse_obj_as, validator
 from typing import Optional, Any
 from datetime import date
-import json
 
 
 class TypeStats(BaseModel):
@@ -115,7 +114,7 @@ def mokaam_call() -> Response:
 
     if response.status_code == 200:
         data = response.json()
-        res.response = data
+        res.response = parse_obj_as(dict[int, TypeStats], data)
         output_json = "./data/mokaam.json"
         with open(output_json, "w") as outfile:
             json.dump(data, outfile, indent=4)
@@ -131,5 +130,4 @@ if __name__ == "__main__":
     val = res.get_val()
     if res.error != None:
         raise exception("Failed to load mokaam data")
-    type_stats = parse_obj_as(dict[int, TypeStats], res.response)
-    print(f"{type_stats}")
+    print(f"{res.response}")
