@@ -3,7 +3,7 @@
 import sqlite3
 import datetime
 import os
-
+import time
 """
 CREATE TABLE IF NOT EXISTS {database_name} (\n{database_scheme});
 """
@@ -269,6 +269,23 @@ def create_historical_table():
     std_dev_year FLOAT"""
     create_db(historical_db_path, "historical_db", historical_scheme)
 
+
+def get_historical_item(typeId: int):
+    if not isinstance(typeId, int):
+        raise Exception("Can't lookup value of non int")
+    querey = f"SELECT * from historical_db where typeID = {typeId}"
+    try:
+        with sqlite3.connect(historical_db_path) as conn:
+            print(f"Opened SQLite database with version {sqlite3.sqlite_version}")
+            cursor = conn.cursor()
+            result = cursor.execute(querey)
+            row = result.fetchone()
+            if row:
+                return row
+            else:
+                return "Not Found"
+    except sqlite3.OperationalError as e:
+        print("Failed to open database:", e)
 
 if __name__ == "__main__":
     drop_db(historical_db_path, "historical_db")

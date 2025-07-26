@@ -13,6 +13,8 @@
 
 import discord
 from discord.ext import tasks
+from typeids import lookup_type_id
+
 from secret import discordToken
 
 
@@ -38,14 +40,11 @@ class MyClient(discord.Client):
         else:
             self.message = message
 
-    @tasks.loop(seconds=60)  # task runs every 60 seconds
+    @tasks.loop(seconds=30)  # task runs every 60 seconds
     async def my_background_task(self):
         channel = self.get_channel(1398417004611899442)  # channel ID goes here
         self.counter += 1
-        if (self.message != None):
-            await channel.send(self.message)
-            self.message = None
-        await channel.send(self.counter)
+        await channel.send(lookup_type_id(self.counter))
 
     @my_background_task.before_loop
     async def before_my_task(self):

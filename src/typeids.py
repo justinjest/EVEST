@@ -31,7 +31,8 @@ def lookup_type_id(typeId: int):
             print(f"Opened SQLite database with version {sqlite3.sqlite_version}")
             cursor = conn.cursor()
             result = cursor.execute(querey)
-            if result:
+
+            if result.fetchone():
                 return result.fetchone()[0]
             else:
                 return "Not Found"

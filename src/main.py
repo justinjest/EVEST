@@ -3,7 +3,9 @@
 import os
 from preferences import save_preferences, load_preferences
 from db_middleware import create_live_table, create_historical_table, post_historical_data
+from db_middleware import get_historical_item
 from mokaam_call import mokaam_call
+from discordInit import bot_init
 
 
 # Magic paths etc live here
@@ -80,9 +82,12 @@ def create_historical_database():
                              **res.response[key].as_post_data())
 
 def __main__():
+
     init()
     startup_databases()
-    create_historical_database()
+    #create_historical_database()
+    for i in range(0, 100):
+       print(get_historical_item(i))
     print("Hello, world")
 
 
