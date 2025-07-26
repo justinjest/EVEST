@@ -4,6 +4,7 @@ import sqlite3
 import datetime
 import os
 import time
+from fuzzworks_call import BuySellStats
 
 """
 CREATE TABLE IF NOT EXISTS {database_name} (\n{database_scheme});
@@ -45,43 +46,24 @@ def drop_db(database_path, table_name):
         print("Failed to open database:", e)
 
 
-def post_live_data(
-    live_db_path,
-    typeid,
-    buy_weighted_average,
-    buy_max,
-    buy_min,
-    buy_stddev,
-    buy_median,
-    buy_volume,
-    buy_order_count,
-    buy_percentile,
-    sell_weighted_average,
-    sell_max,
-    sell_min,
-    sell_stddev,
-    sell_median,
-    sell_volume,
-    sell_order_count,
-    sell_percentile,
-):
+def post_live_data(live_db_path, stats: BuySellStats):
     schema = f"""INSERT INTO live_db(
         typeid, buy_weighted_average, buy_max, buy_min, buy_stddev, buy_median, 
         buy_volume, buy_order_count, buy_percentile, sell_weighted_average, 
         sell_max, sell_min, sell_stddev, sell_median, sell_volume, sell_order_count, 
         sell_percentile
     ) VALUES (
-        {typeid}, {buy_weighted_average}, {buy_max}, {buy_min}, {buy_stddev}, 
-        {buy_median}, {buy_volume}, {buy_order_count}, {buy_percentile},
-        {sell_weighted_average}, {sell_max}, {sell_min}, {sell_stddev}, 
-        {sell_median}, {sell_volume}, {sell_order_count}, {sell_percentile}
+        {stats.typeid}, {stats.buy.weightedAverage}, {stats.buy.max}, {stats.buy.min}, {stats.buy.stddev}, 
+        {stats.buy.median}, {stats.buy.volume}, {stats.buy.orderCount}, {stats.buy.percentile},
+        {stats.sell.weightedAverage}, {stats.sell.max}, {stats.sell.min}, {stats.sell.stddev}, 
+        {stats.sell.median}, {stats.sell.volume}, {stats.sell.orderCount}, {stats.sell.percentile}
     )"""
     try:
         with sqlite3.connect(live_db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print(f"Added {typeid} to live.db")
+            print(f"Added {stats.typeid} to live.db")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
