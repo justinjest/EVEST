@@ -6,24 +6,23 @@ import sqlite3
 from preferences import get_preference
 
 class Response():
-    class Response():
-        def __init__(self):
-            self.response == None
-            self.error == None
+    def __init__(self, response = None, error = None):
+        self.response = response
+        self.error = error
 
-        def get_val(self):
-            if self.error != None:
-                return self.error
-            if self.response != None:
-                return self.response
-            # Neither an error or a response, must be handlded
-            raise Exception("InvalidResponse")
+    def get_val(self):
+        if self.error != None:
+            return self.error
+        if self.response != None:
+            return self.response
+        # Neither an error or a response, must be handlded
+        raise Exception("InvalidResponse")
 
 
 def mokaam_call() -> Response():
     region_id = get_preference("region_id")
     api_url = f"https://mokaam.dk/API/market/all?regionid={region_id}"
-    res = Response()
+    res = Response(None, None)
     print(f"Pulling Mokaam API for region {region_id}")
 
     response = requests.get(api_url)
@@ -43,5 +42,13 @@ def mokaam_call() -> Response():
     return res
 
 if __name__ == "__main__":
-    res = mokaam_call()
+    res = Response()
+    res.error = 404
+    val = res.get_val()
     print(res)
+    print(val)
+    res.error = None
+    res.response = '{"Key": "10"}'
+    val = res.get_val()
+    print(res)
+    print(val)
