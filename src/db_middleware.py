@@ -45,10 +45,36 @@ def drop_db(database_path, table_name):
 
 
 def post_live_data(
-    live_db_path, item_num, lowest_price, highest_price, buy_vol, sell_vol
+    live_db_path,
+    typeid,
+    buy_weighted_average,
+    buy_max,
+    buy_min,
+    buy_stddev,
+    buy_median,
+    buy_volume,
+    buy_order_count,
+    buy_percentile,
+    sell_weighted_average,
+    sell_max,
+    sell_min,
+    sell_stddev,
+    sell_median,
+    sell_volume,
+    sell_order_count,
+    sell_percentile,
 ):
-    schema = f"""INSERT INTO live_db(item_num, lowest_price, highest_price, last_updated, buy_vol, sell_vol)
-    VALUES({item_num},{lowest_price},{highest_price},'{datetime.datetime.now()}',{buy_vol},{sell_vol})"""
+    schema = f"""INSERT INTO live_db(
+        typeid, buy_weighted_average, buy_max, buy_min, buy_stddev, buy_median, 
+        buy_volume, buy_order_count, buy_percentile, sell_weighted_average, 
+        sell_max, sell_min, sell_stddev, sell_median, sell_volume, sell_order_count, 
+        sell_percentile
+    ) VALUES (
+        {typeid}, {buy_weighted_average}, {buy_max}, {buy_min}, {buy_stddev}, 
+        {buy_median}, {buy_volume}, {buy_order_count}, {buy_percentile},
+        {sell_weighted_average}, {sell_max}, {sell_min}, {sell_stddev}, 
+        {sell_median}, {sell_volume}, {sell_order_count}, {sell_percentile}
+    )"""
     print(schema)
     try:
         with sqlite3.connect(live_db_path) as conn:
@@ -160,21 +186,31 @@ def post_historical_data(
 
 
 def create_live_table():
-    live_scheme = """id INTEGER PRIMARY KEY,
-    item_num INTEGER NOT NULL,
-    lowest_price FLOAT,
-    highest_price FLOAT,
-    last_updated DATETIME,
-    buy_vol INTEGER,
-    sell_vol INTEGER"""
+    live_scheme = """typeid INTEGER PRIMARY KEY,
+    buy_weighted_average FLOAT,
+    buy_max FLOAT,
+    buy_min FLOAT,
+    buy_stddev FLOAT,
+    buy_median FLOAT,
+    buy_volume FLOAT,
+    buy_order_count INTEGER,
+    buy_percentile FLOAT,
+    sell_weighted_average FLOAT,
+    sell_max FLOAT,
+    sell_min FLOAT,
+    sell_stddev FLOAT,
+    sell_median FLOAT,
+    sell_volume FLOAT,
+    sell_order_count INTEGER,
+    sell_percentile FLOAT"""
+
     create_db(live_db_path, "live_db", live_scheme)
 
 
 def create_historical_table():
     historical_scheme = """
-    id INTEGER PRIMARY KEY,
+    typeid INTEGER PRIMARY KEY,
     last_updated DATETIME,
-    typeid INTEGER,
     last_data TEXT,
     vol_yesterday FLOAT,
     vol_week FLOAT,
@@ -240,9 +276,66 @@ if __name__ == "__main__":
 
     create_live_table()
     create_historical_table()
-    post_live_data(live_db_path, 0, 0.0, 0.0, 0, 0)
-    post_live_data(live_db_path, 1, 0.0, 0.0, 0, 0)
-    post_live_data(live_db_path, 2, 0.0, 0.0, 0, 0)
+    post_live_data(
+        live_db_path,
+        typeid=1,
+        buy_weighted_average=0.0,
+        buy_max=0.0,
+        buy_min=0.0,
+        buy_stddev=0.0,
+        buy_median=0.0,
+        buy_volume=0.0,
+        buy_order_count=0,
+        buy_percentile=0.0,
+        sell_weighted_average=0.0,
+        sell_max=0.0,
+        sell_min=0.0,
+        sell_stddev=0.0,
+        sell_median=0.0,
+        sell_volume=0.0,
+        sell_order_count=0,
+        sell_percentile=0.0,
+    )
+    post_live_data(
+        live_db_path,
+        typeid=2,
+        buy_weighted_average=0.0,
+        buy_max=0.0,
+        buy_min=0.0,
+        buy_stddev=0.0,
+        buy_median=0.0,
+        buy_volume=0.0,
+        buy_order_count=0,
+        buy_percentile=0.0,
+        sell_weighted_average=0.0,
+        sell_max=0.0,
+        sell_min=0.0,
+        sell_stddev=0.0,
+        sell_median=0.0,
+        sell_volume=0.0,
+        sell_order_count=0,
+        sell_percentile=0.0,
+    )
+    post_live_data(
+        live_db_path,
+        typeid=3,
+        buy_weighted_average=0.0,
+        buy_max=0.0,
+        buy_min=0.0,
+        buy_stddev=0.0,
+        buy_median=0.0,
+        buy_volume=0.0,
+        buy_order_count=0,
+        buy_percentile=0.0,
+        sell_weighted_average=0.0,
+        sell_max=0.0,
+        sell_min=0.0,
+        sell_stddev=0.0,
+        sell_median=0.0,
+        sell_volume=0.0,
+        sell_order_count=0,
+        sell_percentile=0.0,
+    )
     post_historical_data(
         historical_db_path,
         typeid=0,
