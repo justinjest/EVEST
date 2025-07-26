@@ -35,7 +35,7 @@ def init():
     if not os.path.exists(preference_path):
         preferences = {
             "region_id": "10000002",
-            "station_id": "30000142",
+            "station_id": "60003760",
             "time": "month",
             "market_size": "1000000000",
             "market_volume": "300",
@@ -54,7 +54,7 @@ def init():
             # preferences file but it has wrong values
             preferences = {
                 "region_id": "10000002",
-                "station_id": "30000142",
+                "station_id": "60003760",
                 "time": "month",
                 "market_size": "1000000000",
                 "market_volume": "300",

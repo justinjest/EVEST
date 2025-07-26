@@ -3,8 +3,9 @@
 import requests
 import json
 import sqlite3
+import time
 from preferences import get_preference
-from pydantic import BaseModel, Field, parse_obj_as, validator
+from pydantic import BaseModel, TypeAdapter
 from typing import Optional, Any
 from datetime import date
 
@@ -42,7 +43,7 @@ class Response:
         raise Exception("InvalidResponse")
 
 
-def get_typeids_as_string(db_path):
+def get_typeids_as_list(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
@@ -52,34 +53,78 @@ def get_typeids_as_string(db_path):
 
     conn.close()
 
-    typeid_list = [str(row[0]) for row in typeids]
-    typeid_string = ", ".join(typeid_list)
+    typeid_list = [(row[0]) for row in typeids]
 
-    return typeid_string
+    return typeid_list
 
 
 def fuzzworks_call() -> Response:
     res = Response()
     station_id = get_preference("station_id")
-    type_ids = get_typeids_as_string(historical_db_path)
-    print(type_ids)
 
-    api_url = f"https://market.fuzzwork.co.uk/aggregates/?region={station_id}"
+    typeid_list = get_typeids_as_list(historical_db_path)
+    clean_type_ids = list(set(typeid_list))  # Remove duplicates
 
-    print(f"Pulling Fuzzwork API for station {station_id}")
+    api_url_base = (
+        f"https://market.fuzzwork.co.uk/aggregates/?station={station_id}&types="
+    )
+    chunk_size = 100
 
-    response = requests.get(api_url)
+    all_data = []
 
-    if response.status_code == 200:
-        data = response.json()
-        res.response = parse_obj_as(dict[int, BuySellStats], data)
-        output_json = "./data/fuzzworks.json"
-        with open(output_json, "w") as outfile:
-            json.dump(data, outfile, indent=4)
-        print(f"Data has been written to {output_json}")
-    else:
-        res.error = response.status_code
-        print(f"Error: {response.status_code}")
+    for o in range(0, len(clean_type_ids), chunk_size):
+        temparray = clean_type_ids[o : o + chunk_size]
+        time.sleep(0.1)
+        types = ",".join(map(str, temparray))
+        api_url = api_url_base + types
+
+        print(f"Pulling Fuzzwork API for station {station_id} with types: {types}")
+
+        response = requests.get(api_url)
+
+        if response.status_code == 200:
+            try:
+                raw_data = response.json()
+                print("Received raw JSON data")
+                if not raw_data:
+                    print("Raw data is empty")
+                    res.error = "Empty response from API"
+                    return res
+
+                if isinstance(raw_data, dict):
+                    # If raw_data is a dictionary, assume it's a mapping of typeid to data
+                    data = raw_data
+                    print("Transformed data to dictionary")
+                    all_data.extend(data.values())
+                else:
+                    print("Raw data is not a dictionary")
+                    res.error = "Unexpected response format"
+                    return res
+            except json.JSONDecodeError as e:
+                print("Failed to parse JSON response:", e)
+                res.error = str(e)
+                return res
+        else:
+            res.error = response.status_code
+            print(f"Error: {response.status_code}")
+            return res
+
+    if all_data:
+        print(all_data)
+        adapter = TypeAdapter(dict[int, BuySellStats])
+        try:
+            res.response = adapter.validate_python(
+                {item["typeid"]: item for item in all_data}
+            )
+            output_json = "./data/fuzzworks.json"
+            with open(output_json, "w") as outfile:
+                json.dump(
+                    {item["typeid"]: item for item in all_data}, outfile, indent=4
+                )
+            print(f"Validated data has been written to {output_json}")
+        except Exception as e:
+            print("Validation error:", e)
+            res.error = str(e)
 
     return res
 
