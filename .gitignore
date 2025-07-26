@@ -16,3 +16,5 @@ data/mokaam.json
 data/preferences.ini
 src/__pycache__/
 data/typeids.json
+data/live.db
+data/historical.db
