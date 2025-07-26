@@ -4,6 +4,7 @@ import sqlite3
 import datetime
 import os
 import time
+
 """
 CREATE TABLE IF NOT EXISTS {database_name} (\n{database_scheme});
 """
@@ -39,7 +40,7 @@ def drop_db(database_path, table_name):
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print("Table dropped")
+            print(f"Table {table_name} dropped")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -75,13 +76,12 @@ def post_live_data(
         {sell_weighted_average}, {sell_max}, {sell_min}, {sell_stddev}, 
         {sell_median}, {sell_volume}, {sell_order_count}, {sell_percentile}
     )"""
-    print(schema)
     try:
         with sqlite3.connect(live_db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print("Table updated")
+            print(f"Added {typeid} to live.db")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -174,13 +174,12 @@ def post_historical_data(
         {_52w_low}, {_52w_high}, {std_dev_week}, {std_dev_month}, {std_dev_quarter}, {std_dev_year}
     )"""
 
-    print(schema)
     try:
         with sqlite3.connect(historical_db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print("Table updated")
+            print(f"Added {typeid} to historical.db")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -286,6 +285,7 @@ def get_historical_item(typeId: int):
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
+
 def get_db_size(database_path, database_name) -> int:
     querey = f"SELECT count(typeID) from {database_name}"
     try:
@@ -302,8 +302,8 @@ def get_db_size(database_path, database_name) -> int:
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
-
     return 0
+
 
 if __name__ == "__main__":
     drop_db(historical_db_path, "historical_db")

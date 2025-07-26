@@ -5,7 +5,7 @@ import json
 import sqlite3
 import os
 from preferences import get_preference
-from pydantic import BaseModel, Field, parse_obj_as, validator
+from pydantic import BaseModel, Field, TypeAdapter, field_validator
 from typing import Optional, Any
 from datetime import date
 
@@ -81,7 +81,8 @@ class TypeStats(BaseModel):
     std_dev_quarter: float
     std_dev_year: float
 
-    @validator("last_data", pre=True)
+    @field_validator("last_data", mode="before")
+    @classmethod
     def parse_last_data(cls, v: Any) -> Optional[date]:
         if v in ("Null", "ERROR: 404", "ERROR: 400", None):
             return None
@@ -172,24 +173,35 @@ class Response:
 
 def mokaam_call() -> Response:
     region_id = get_preference("region_id")
-    api_url = f"https://mokaam.dk/API/market/all?regionid={region_id}"
+    market_size = get_preference("market_size")
+    market_volume = get_preference("market_volume")
+    api_url = f"https://mokaam.dk/API/market/query?type=items&regionid={region_id}&query=size_month>{market_size}&query=volume_month>{market_volume}"
     res = Response()
     print(f"Pulling Mokaam API for region {region_id}")
 
     response = requests.get(api_url)
-    print("Received data from api")
-
+    print("Received data from API")
     if response.status_code == 200:
-        data = response.json()
-        res.response = parse_obj_as(dict[int, TypeStats], data)
-        output_json = "./data/mokaam.json"
-        with open(output_json, "w") as outfile:
-            json.dump(data, outfile, indent=4)
-        print(f"Data has been written to {output_json}")
+        try:
+            raw_data = response.json()
+            print("Received raw JSON data")
+            data = {item["typeid"]: item for item in raw_data}
+            print("Transformed data to dictionary")
+
+            adapter = TypeAdapter(dict[int, TypeStats])
+            try:
+                res.response = adapter.validate_python(data)
+                output_json = "./data/mokaam.json"
+                with open(output_json, "w") as outfile:
+                    json.dump(data, outfile, indent=4)
+                print(f"Validated data has been written to {output_json}")
+            except Exception as e:
+                print("Validation error:", e)
+        except json.JSONDecodeError as e:
+            print("Failed to parse JSON response:", e)
     else:
         res.error = response.status_code
         print(f"Error: {response.status_code}")
-
     return res
 
 
