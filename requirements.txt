@@ -1,0 +1,4 @@
+requests == "2.32.4"
+json
+sqlite3 == "3.45.1"
+configparser == "7.2.0"
