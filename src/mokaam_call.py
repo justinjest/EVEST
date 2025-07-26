@@ -3,6 +3,7 @@
 import requests
 import json
 import sqlite3
+import os
 from preferences import get_preference
 from pydantic import BaseModel, Field, parse_obj_as, validator
 from typing import Optional, Any
@@ -92,6 +93,7 @@ class TypeStats(BaseModel):
     def as_post_data(self) -> dict:
         return build_historical_post_data(self)
 
+
 def build_historical_post_data(stats: TypeStats) -> dict:
     return {
         "typeid": stats.typeid,
@@ -145,7 +147,7 @@ def build_historical_post_data(stats: TypeStats) -> dict:
         "vwap_month": stats.vwap_month,
         "vwap_quarter": stats.vwap_quarter,
         "vwap_year": stats.vwap_year,
-        "_52w_low": stats.w52_low,   # Note alias used here
+        "_52w_low": stats.w52_low,  # Note alias used here
         "_52w_high": stats.w52_high,
         "std_dev_week": stats.std_dev_week,
         "std_dev_month": stats.std_dev_month,
@@ -153,14 +155,16 @@ def build_historical_post_data(stats: TypeStats) -> dict:
         "std_dev_year": stats.std_dev_year,
     }
 
-class Response():
-    def __init__(self, response = None, error = None):
+
+class Response:
+    def __init__(self, response=None, error=None):
         self.response = response
         self.error = error
+
     def get_val(self):
-        if self.error != None:
+        if self.error is not None:
             return self.error
-        if self.response != None:
+        if self.response is not None:
             return self.response
         # Neither an error or a response, must be handlded
         raise Exception("InvalidResponse")
@@ -183,14 +187,15 @@ def mokaam_call() -> Response:
             json.dump(data, outfile, indent=4)
         print(f"Data has been written to {output_json}")
     else:
-        res.error = respionse.status_code
+        res.error = response.status_code
         print(f"Error: {response.status_code}")
 
     return res
 
+
 if __name__ == "__main__":
     res = mokaam_call()
     val = res.get_val()
-    if res.error != None:
+    if res.error is not None:
         raise exception("Failed to load mokaam data")
     print(f"{res.response}")

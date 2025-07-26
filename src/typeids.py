@@ -4,10 +4,11 @@ import requests
 import json
 import sqlite3
 
+
 def old_type_id():
     api_url = "https://mokaam.dk/API/market/type_ids"
 
-    print(f"Pulling Mokaam type_ids")
+    print("Pulling Mokaam type_ids")
 
     response = requests.get(api_url)
 
@@ -25,12 +26,12 @@ def lookup_type_id(typeId: int):
     database_path = "./static/inv.db"
     if not isinstance(typeId, int):
         raise Exception("Can't lookup value of non int")
-    querey = f"SELECT typeName from invTypes where typeID = {typeId}"
+    query = f"SELECT typeName from invTypes where typeID = {typeId}"
     try:
         with sqlite3.connect(database_path) as conn:
             print(f"Opened SQLite database with version {sqlite3.sqlite_version}")
             cursor = conn.cursor()
-            result = cursor.execute(querey)
+            result = cursor.execute(query)
 
             if result.fetchone():
                 return result.fetchone()[0]
@@ -38,6 +39,7 @@ def lookup_type_id(typeId: int):
                 return "Not Found"
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
+
 
 if __name__ == "__main__":
     print(lookup_type_id(0))
