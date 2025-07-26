@@ -42,13 +42,7 @@ def mokaam_call() -> Response():
     return res
 
 if __name__ == "__main__":
-    res = Response()
-    res.error = 404
-    val = res.get_val()
-    print(res)
-    print(val)
-    res.error = None
-    res.response = '{"Key": "10"}'
+    res = mokaam_call()
     val = res.get_val()
     print(res)
     print(val)
