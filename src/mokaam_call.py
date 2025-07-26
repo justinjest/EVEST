@@ -89,6 +89,69 @@ class TypeStats(BaseModel):
         except Exception:
             raise ValueError(f"Invalid date value: {v}")
 
+    def as_post_data(self) -> dict:
+        return build_historical_post_data(self)
+
+def build_historical_post_data(stats: TypeStats) -> dict:
+    return {
+        "typeid": stats.typeid,
+        "last_data": stats.last_data,
+        "vol_yesterday": stats.vol_yesterday,
+        "vol_week": stats.vol_week,
+        "vol_month": stats.vol_month,
+        "vol_quarter": stats.vol_quarter,
+        "vol_year": stats.vol_year,
+        "avg_price_yesterday": stats.avg_price_yesterday,
+        "avg_price_week": stats.avg_price_week,
+        "avg_price_month": stats.avg_price_month,
+        "avg_price_quarter": stats.avg_price_quarter,
+        "avg_price_year": stats.avg_price_year,
+        "order_count_yesterday": stats.order_count_yesterday,
+        "order_count_week": stats.order_count_week,
+        "order_count_month": stats.order_count_month,
+        "order_count_quarter": stats.order_count_quarter,
+        "order_count_year": stats.order_count_year,
+        "size_yesterday": stats.size_yesterday,
+        "size_week": stats.size_week,
+        "size_month": stats.size_month,
+        "size_quarter": stats.size_quarter,
+        "size_year": stats.size_year,
+        "high_yesterday": stats.high_yesterday,
+        "high_week": stats.high_week,
+        "high_month": stats.high_month,
+        "high_quarter": stats.high_quarter,
+        "high_year": stats.high_year,
+        "ab_high_yesterday": stats.ab_high_yesterday,
+        "ab_high_week": stats.ab_high_week,
+        "ab_high_month": stats.ab_high_month,
+        "ab_high_quarter": stats.ab_high_quarter,
+        "ab_high_year": stats.ab_high_year,
+        "low_yesterday": stats.low_yesterday,
+        "low_week": stats.low_week,
+        "low_month": stats.low_month,
+        "low_quarter": stats.low_quarter,
+        "low_year": stats.low_year,
+        "ab_low_yesterday": stats.ab_low_yesterday,
+        "ab_low_week": stats.ab_low_week,
+        "ab_low_month": stats.ab_low_month,
+        "ab_low_quarter": stats.ab_low_quarter,
+        "ab_low_year": stats.ab_low_year,
+        "spread_yesterday": stats.spread_yesterday,
+        "spread_week": stats.spread_week,
+        "spread_month": stats.spread_month,
+        "spread_quarter": stats.spread_quarter,
+        "spread_year": stats.spread_year,
+        "vwap_week": stats.vwap_week,
+        "vwap_month": stats.vwap_month,
+        "vwap_quarter": stats.vwap_quarter,
+        "vwap_year": stats.vwap_year,
+        "_52w_low": stats.w52_low,   # Note alias used here
+        "_52w_high": stats.w52_high,
+        "std_dev_week": stats.std_dev_week,
+        "std_dev_month": stats.std_dev_month,
+        "std_dev_quarter": stats.std_dev_quarter,
+        "std_dev_year": stats.std_dev_year,
+    }
 
 class Response():
     def __init__(self, response = None, error = None):
