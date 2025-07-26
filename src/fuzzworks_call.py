@@ -8,6 +8,10 @@ from pydantic import BaseModel, Field, parse_obj_as, validator
 from typing import Optional, Any
 from datetime import date
 
+
+historical_db_path = "./data/historical.db"
+
+
 class MarketStats(BaseModel):
     weightedAverage: float
     max: float
@@ -24,30 +28,43 @@ class BuySellStats(BaseModel):
     sell: MarketStats
 
 
-class Response():
-    def __init__(self, response = None, error = None):
+class Response:
+    def __init__(self, response=None, error=None):
         self.response = response
         self.error = error
+
     def get_val(self):
-        if self.error != None:
+        if self.error is not None:
             return self.error
-        if self.response != None:
+        if self.response is not None:
             return self.response
         # Neither an error or a response, must be handlded
         raise Exception("InvalidResponse")
-# This will either return valid json, or error for each type id passed to it:w
-#
-def fuzzworks_call() -> Response:
-    TypeMarketStats = dict[int, BuySellStats]
 
+
+def get_typeids_as_string(db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT typeid FROM historical_db")
+
+    typeids = cursor.fetchall()
+
+    conn.close()
+
+    typeid_list = [str(row[0]) for row in typeids]
+    typeid_string = ", ".join(typeid_list)
+
+    return typeid_string
+
+
+def fuzzworks_call() -> Response:
     res = Response()
     station_id = get_preference("station_id")
-    region_id = get_preference("region_id")
-    type_ids = "34,35,36,37,38,39,40"  # TK import from somewhere else
+    type_ids = get_typeids_as_string(historical_db_path)
+    print(type_ids)
 
-    api_url = (
-        f"https://market.fuzzwork.co.uk/aggregates/?region={region_id}&types={type_ids}"
-    )
+    api_url = f"https://market.fuzzwork.co.uk/aggregates/?region={station_id}&types={type_ids}"
 
     print(f"Pulling Fuzzwork API for station {station_id}")
 
@@ -65,6 +82,7 @@ def fuzzworks_call() -> Response:
         print(f"Error: {response.status_code}")
 
     return res
+
 
 if __name__ == "__main__":
     res = fuzzworks_call()

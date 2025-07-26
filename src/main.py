@@ -69,6 +69,9 @@ def init():
 
 
 def startup_databases():
+    timestamp = "./data/lastrun.txt"
+    today = datetime.now().date()
+
     if not os.path.exists(live_db_path):
         print("Unable to find live table, now creating")
         create_live_table()
@@ -76,52 +79,47 @@ def startup_databases():
         print("Live table found. Clearing live table data.")
         drop_db(live_db_path, "live_db")
         create_live_table()
-        print("Live table cleared.")
+
     if not os.path.exists(historical_db_path):
         print("Unable to find historical table, now creating")
         create_historical_table()
+        with open(timestamp, "w") as file:
+            file.write(str(today))
     else:
-        print("Historical table found. Clearing historical table data.")
-        drop_db(historical_db_path, "historical_db")
-        create_historical_table()
-        print("Historical table cleared.")
+        if os.path.exists(timestamp):
+            with open(timestamp, "r") as file:
+                last_run_date = file.read().strip()
+                if last_run_date == str(today):
+                    print("Price history data is already up-to-date.")
+                    return
+        else:
+            print("Clearing historical table data.")
+            drop_db(historical_db_path, "historical_db")
+            create_historical_table()
+            print("Historical table cleared.")
+            with open(timestamp, "w") as file:
+                file.write(str(today))
 
 
 def create_historical_database():
-    timestamp = "./data/lastrun.txt"
-    today = datetime.now().date()
-    if os.path.exists(timestamp):
-        with open(timestamp, "r") as file:
-            last_run_date = file.read().strip()
-            if last_run_date == str(today):
-                print("Price history data is already up-to-date.")
-                return
-    else:
-        with open(timestamp, "w") as file:
-            file.write(str(today))
-
     res = mokaam_call()
+    if res.error is not None:
+        raise Exception(f"{res.error}")
+    for key in res.response:
+        # TK this needs to be batched in a loop into an object and then post to the db all at once.
+        # print(f"{res.response[key].as_post_data()}")
+        post_historical_data(historical_db_path, **res.response[key].as_post_data())
+
+
+def create_live_database():
+    res = fuzzworks_call()
     if res.error is not None:
         raise Exception(f"{res.error}")
     for key in res.response:
         # We need to call the insert val into database here
         # TK this needs to be batched in a loop into an object and then post to the db all at once.
         print(f"{res.response[key].as_post_data()}")
-        post_historical_data(historical_db_path, **res.response[key].as_post_data())
-
-    with open(timestamp, "w") as file:
-        file.write(str(today))
-
-
-# def create_live_database():
-#     res = fuzzworks_call()
-#     if res.error is not None:
-#         raise Exception(f"{res.error}")
-#     for key in res.response:
-#         # We need to call the insert val into database here
-#         # TK this needs to be batched in a loop into an object and then post to the db all at once.
-#         print(f"{res.response[key].as_post_data()}")
-#         post_historical_data(live_db_path, **res.response[key].as_post_data())
+        post_historical_data(live_db_path, **res.response[key].as_post_data())
 
 
 def __main__():
@@ -133,8 +131,8 @@ def __main__():
     for i in range(0, historical_size):
         res = get_historical_item(i)
         if res != "Not Found":
-            print(res)
-    print("Hello, world")
+            print(res.typeid)
+    print("Import complete")
 
 
 if __name__ == "__main__":
