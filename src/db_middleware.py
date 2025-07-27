@@ -188,7 +188,6 @@ def create_live_table():
     create_db(live_db_path, "live_db", live_scheme)
 
 
-
 def create_historical_table():
     historical_scheme = """
     typeid INTEGER PRIMARY KEY,
@@ -267,24 +266,6 @@ def get_historical_item(typeId: int):
                 return "Not Found"
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
-
-def get_live_item(typeId: int):
-    if not isinstance(typeId, int):
-        raise Exception("Can't lookup value of non int")
-    query = f"SELECT * from live_db where typeID = {typeId}"
-    try:
-        with sqlite3.connect(live_db_path) as conn:
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            result = cursor.execute(query)
-            row = result.fetchone()
-            if row:
-                return dict(row)
-            else:
-                return "Not Found"
-    except sqlite3.OperationalError as e:
-        print("Failed to open database:", e)
-
 
 
 def get_db_size(database_path, database_name) -> int:
