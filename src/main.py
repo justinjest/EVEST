@@ -35,7 +35,7 @@ data_folder = "./data/"
 historical_db_path = os.path.join(data_folder, historical_db)
 live_db_path = os.path.join(data_folder, live_db)
 preference_path = os.path.join(data_folder, preferences)
-transaction_path = os.path.join(data_folder, transactions)
+transaction_db_path = os.path.join(data_folder, transactions)
 
 os.makedirs(data_folder, exist_ok=True)
 
@@ -157,12 +157,12 @@ def loop(buy, sell, p):
         item = get_live_item(i)
         p.sell_item(i, item["sell_weighted_average"])
         print(f"{lookup_type_id(i)}")
-    print("User currently has: {} isk", p.funds)
+    print("User currently has: {} isk", round(p.funds, 2))
     items = p.items
     for item in items:
         print(f"{lookup_type_id(item)}")
-        print(f"Avg buy price{item[0]}")
-        print(f"Num in inventory{item[1]}")
+        print(f"Avg buy price: {round(items[item][0], 2)}")
+        print(f"Num in inventory: {items[item][1]}")
     if buy != new_buy:
         print("Buy")
         for i in new_buy:
@@ -177,12 +177,7 @@ def loop(buy, sell, p):
         sell = new_sell
     else:
         print("no new sells")
-    print("User currently has: {} isk", p.funds)
-    items = p.items
-    for item in items:
-        print(f"{lookup_type_id(item)}")
-        print(f"Avg buy price{item[0]}")
-        print(f"Num in inventory{item[1]}")
+
 
     return new_buy, new_sell
 
