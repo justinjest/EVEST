@@ -15,6 +15,7 @@ from db_middleware import (
 from db_middleware import get_historical_item, get_db_size
 from mokaam_call import mokaam_call
 from buy_list import create_buy_list
+from buy_list import flag_create
 from sell_list import create_sell_list
 from typeids import lookup_type_id
 # from discordInit import bot_init
@@ -136,6 +137,7 @@ def main():
     print("Import complete")
     buy = create_buy_list()
     sell = create_sell_list()
+    buy, sell = flag_create()
     print("BUY:")
     for i in buy:
         print(f"{lookup_type_id(i)}")
@@ -143,7 +145,8 @@ def main():
     for i in sell:
         print(f"{lookup_type_id(i)}")
     print("In main loop")
-    while True:
+    '''
+   while True:
         sleep(60*15)
         drop_db(live_db_path, "live_db")
         create_live_table()
@@ -164,6 +167,6 @@ def main():
             sell = new_sell
         else:
             print("no new sells")
-
+   '''
 if __name__ == "__main__":
     main()

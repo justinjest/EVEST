@@ -254,15 +254,16 @@ def create_historical_table():
 
 def get_historical_item(typeId: int):
     if not isinstance(typeId, int):
-        raise Exception("Can't lookup value of non int")
-    querey = f"SELECT * from historical_db where typeID = {typeId}"
+        raise ValueError("Can't lookup value of non int")
+    query = f"SELECT * from historical_db where typeID = {typeId}"
     try:
         with sqlite3.connect(historical_db_path) as conn:
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
-            result = cursor.execute(querey)
+            result = cursor.execute(query)
             row = result.fetchone()
             if row:
-                return row
+                return dict(row)
             else:
                 return "Not Found"
     except sqlite3.OperationalError as e:
@@ -270,7 +271,7 @@ def get_historical_item(typeId: int):
 
 def get_live_item(typeId: int):
     if not isinstance(typeId, int):
-        raise Exception("Can't lookup value of non int")
+        raise ValueError("Can't lookup value of non int")
     query = f"SELECT * from live_db where typeID = {typeId}"
     try:
         with sqlite3.connect(live_db_path) as conn:
