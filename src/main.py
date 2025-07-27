@@ -84,8 +84,13 @@ def main():
     startup_databases()
     p = Player()
     print("Import complete")
+<<<<<<< HEAD
     repl_loop()
 
 
+=======
+    print("In main loop")
+    repl_loop(p)
+>>>>>>> feea766 (Making some changes)
 if __name__ == "__main__":
     main()
