@@ -22,7 +22,7 @@ def retry_api_call(retries=3, delay=1):
                     response = api_function(*args, **kwargs)
                     if response.error is not None:
                         raise ValueError (response.error)  # raises HTTPError if status is 4xx or 5xx
-                    return response.json()
+                    return response
                 except Exception as e:
                     print(f"[Attempt {attempt}] Error: {e}")
                     if attempt < retries:

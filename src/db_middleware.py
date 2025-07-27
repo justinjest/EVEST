@@ -21,7 +21,6 @@ os.makedirs(data_folder, exist_ok=True)
 
 def create_db(database_path, table_name, database_scheme):
     schema = f"CREATE TABLE IF NOT EXISTS {table_name}(\n{database_scheme});"
-    print(schema)
     try:
         with sqlite3.connect(database_path) as conn:
             cursor = conn.cursor()
@@ -581,10 +580,11 @@ def timestamp_guard(timestamp_path, cooldown = timedelta(days=1)):
                         print(last_run_str)
                         print(last_run)
                         print(now)
-
+                        print("Cooldown:", cooldown)
                         if last_run.tzinfo == None:
                             last_run = last_run.replace(tzinfo=timezone.utc)
-                        if now - last_run > cooldown:
+                        print("Diff:", now - last_run)
+                        if now - last_run < cooldown:
                             print(f"Unable to run: {func.__name__} too soon")
                             return
                     except Exception as e:
