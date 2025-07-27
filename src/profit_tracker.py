@@ -36,8 +36,6 @@ class Player:
             revenue = price * units
             self.funds += revenue
             self.log_transaction("sell", item_id, price, units)
-        else:
-            print("You don't own this item.")
 
     def decide_buy_amount(self, price):
         if price == 0:

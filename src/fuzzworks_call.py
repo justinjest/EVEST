@@ -106,7 +106,6 @@ def fuzzworks_call() -> Response:
         types = ",".join(map(str, temparray))
         api_url = api_url_base + types
 
-        print(f"Pulling Fuzzwork API for station {station_id} with type_ids: {types}")
 
         response = requests.get(api_url)
 
@@ -128,7 +127,6 @@ def fuzzworks_call() -> Response:
                                 "sell": stats["sell"],
                             }
                         )
-                    print("Added data to dictionary")
                 else:
                     print("Raw data is not a dictionary")
                     res.error = "Unexpected response format"

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import sqlite3
-import datetime
+from datetime import datetime, timedelta, timezone
+from functools import wraps
 import os
 import time
 from fuzzworks_call import BuySellStats
@@ -23,13 +24,10 @@ def create_db(database_path, table_name, database_scheme):
     print(schema)
     try:
         with sqlite3.connect(database_path) as conn:
-            print(
-                f"Opened SQLite database with version {sqlite3.sqlite_version} successfully."
-            )
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print("Table created successfully")
+            print(f"Table {table_name} created successfully")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -63,7 +61,6 @@ def post_live_data(live_db_path, stats: BuySellStats):
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print(f"Added {stats.typeid} to live.db")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -161,7 +158,6 @@ def post_historical_data(
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print(f"Added {typeid} to historical.db")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -553,3 +549,82 @@ if __name__ == "__main__":
         std_dev_quarter=0.0,
         std_dev_year=0.0,
     )
+
+
+def startup_databases():
+    timestamp_hist = "./data/lastrun_hist.txt"
+    timestamp_live = "./data/lastrun_live.txt"
+
+    update_dbs()
+
+    # Transaction startup
+    if not os.path.exists(transaction_db_path):
+        print("Unable to find transaction table, now creating")
+        create_transaction_database(transaction_db_path)
+    else:
+        print("Clearing transaction table data.")
+        drop_db(transaction_db_path, "transaction_db")
+        create_transaction_database(transaction_db_path)
+        print("Transaction table cleared.")
+
+def timestamp_guard(timestamp_path, cooldown = timedelta(days=1)):
+    # Historical start up
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            now = datetime.now(timezone.utc)
+            if os.path.exists(timestamp_path):
+                with open(timestamp_path, "r") as file:
+                    try:
+                        last_run_str = file.read().strip()
+                        last_run = datetime.fromisoformat(last_run_str)
+                        if last_run.tzinfo is None:
+                            last_run = last_run.replace(tzinfo=timezone.utc)
+                        print(f"Unable to run: {func.__name__} too soon")
+                        return
+                    except Exception as e:
+                        print (f"Failed to parse timestamp, rerunning. Reason {e}")
+            result = func(*args, **kwargs)
+            with open(timestamp_path, "w") as file:
+                file.write(now.isoformat())
+            return result
+        return wrapper
+    return decorator
+
+@timestamp_guard("./data/timestamp_hist")
+def hist_update(path):
+    if os.path.exists(path):
+        drop_db(path, "historical_db")
+    create_historical_table()
+    populate_historical_database()
+
+@timestamp_guard("./data/timestamp_live", cooldown=timedelta(minutes=15))
+def live_update(path):
+    if os.path.exists(path):
+        drop_db(path, "live_db")
+    create_live_table()
+    populate_live_database()
+
+def update_dbs(hist_path = historical_db_path, live_path = live_db_path):
+    hist_update(hist_path)
+    live_update(live_path)
+
+def populate_historical_database():
+    res = mokaam_call()
+
+    if res.error is not None:
+        raise Exception(f"{res.error}")
+    for key in res.response:
+        # TK this needs to be batched in a loop into an object and then post to the db all at once.
+        # print(f"{res.response[key].as_post_data()}")
+        post_historical_data(historical_db_path, **res.response[key].as_post_data())
+
+
+def populate_live_database():
+    res = fuzzworks_call()
+    if res.error is not None:
+        raise Exception(f"{res.error}")
+    for key in res.response:
+        # We need to call the insert val into database here
+        # TK this needs to be batched in a loop into an object and then post to the db all at once.
+        post_live_data(live_db_path, res.response[key])
