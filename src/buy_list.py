@@ -51,7 +51,7 @@ def create_buy_list():
     buy_list = []
     for i in liv_data.keys():
         if i in his_data:
-            if liv_data[i] < his_data[i] * 0.90:
+            if liv_data[i] < his_data[i] * 0.85:
                 buy_list.append(i)
     return buy_list
 
