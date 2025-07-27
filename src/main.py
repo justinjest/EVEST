@@ -10,7 +10,7 @@ from db_middleware import get_historical_item, get_db_size
 from mokaam_call import mokaam_call
 from buy_sell import flag_create, output_order_sheet
 from typeids import lookup_type_id
-from profit_tracker import Player, create_transaction_database
+from profit_tracker import Player, create_transaction_database, print_player, update_player
 from set_preferences import setup_preferences
 # from discordInit import bot_init
 
@@ -88,38 +88,14 @@ def startup_databases():
 
 def loop(p):
     print("Flag create")
-    #buy, sell = flag_create()
+    buy, sell = flag_create()
     print("udpate dbs")
     #update_dbs()
     print("Update player")
-    #update_player(buy, sell, p)
-    #print_player(p)
+    update_player(buy, sell, p)
+    print_player(p)
     print("Update order_sheet")
     #output_order_sheet(buy, sell)
-
-def output_order_sheet(buy, sell):
-    print("Buy")
-    for i in buy:
-        print(f"{lookup_type_id(i)}")
-    print("Sell")
-    for i in sell:
-        print(f"{lookup_type_id(i)}")
-
-def update_player(buy, sell, p):
-    for i in buy:
-        data = get_live_item(i)
-        p.buy_item(i, data["buy_weighted_average"])
-    for i in sell:
-        data = get_live_item(i)
-        p.sell_item(i, data["sell_weighted_average"])
-
-def print_player(p):
-    print(f"User currently has: {round(p.funds, 2)} isk")
-    items = p.items
-    for item in items:
-        print(f"{lookup_type_id(item)}")
-        print(f"Avg buy price: {round(items[item][0], 2)}")
-        print(f"Num in inventory: {items[item][1]}")
 
 def main():
     setup_preferences()

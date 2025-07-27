@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import sqlite3
 import datetime
+from typeids import lookup_type_id
 from preferences import get_preference
-from db_middleware import drop_db
+from db_middleware import drop_db, get_live_item
 
 class Player:
     def __init__(self, starting_funds=1000000000, personal_risk=0.01):
@@ -73,6 +74,23 @@ def create_transaction_database(db_path="./data/transactions.db"):
             )
         """)
 
+
+def print_player(p):
+    print(f"User currently has: {round(p.funds, 2)} isk")
+    items = p.items
+    for item in items:
+        print(f"{lookup_type_id(item)}")
+        print(f"Avg buy price: {round(items[item][0], 2)}")
+        print(f"Num in inventory: {items[item][1]}")
+
+
+def update_player(buy, sell, p):
+    for i in buy:
+        data = get_live_item(i)
+        p.buy_item(i, data["buy_weighted_average"])
+    for i in sell:
+        data = get_live_item(i)
+        p.sell_item(i, data["sell_weighted_average"])
 
 if __name__ == "__main__":
     drop_db("./data/transactions.db", "transactions")
