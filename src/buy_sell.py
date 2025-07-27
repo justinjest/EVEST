@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-
+#
 import sqlite3
 from preferences import get_preference
-
 from db_middleware import get_live_item, get_historical_item
 
 historical_db_path = "./data/historical.db"
@@ -10,25 +9,8 @@ live_db_path = "./data/live.db"
 preference_path = "./data/preference.ini"
 
 
-def get_mokaam_data():
-    time = get_preference("time")
-    request = f"SELECT typeid, low_{time} from historical_db where vol_month > 300;"
-
-    try:
-        with sqlite3.connect(historical_db_path) as conn:
-            cursor = conn.cursor()
-            res = cursor.execute(request)
-            row = res.fetchall()
-            if row:
-                return row
-            else:
-                return "Not found"
-    except sqlite3.OperationalError as e:
-        print("Failed to open database:", e)
-
 def get_live_data():
     request = f"SELECT typeid, buy_weighted_average from live_db"
-
     try:
         with sqlite3.connect(live_db_path) as conn:
             cursor = conn.cursor()
@@ -41,11 +23,6 @@ def get_live_data():
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
-def process_data(vals):
-    val = {}
-    for i in vals:
-        val[i[0]]= i[1]
-    return val
 
 def process_data_to_array(vals):
     val = []
@@ -53,17 +30,6 @@ def process_data_to_array(vals):
         val.append(i[0])
     return val
 
-def create_buy_list():
-    tmp = get_mokaam_data()
-    his_data = process_data(tmp)
-    tmp = get_live_data()
-    liv_data = process_data(tmp)
-    buy_list = []
-    for i in liv_data.keys():
-        if i in his_data:
-            if liv_data[i] < his_data[i] * 0.85:
-                buy_list.append(i)
-    return buy_list
 
 def flag_create():
     sales_tax = float(get_preference("sales_tax"))
@@ -110,7 +76,12 @@ def flag_create():
 
     return buy, sell
 
-if __name__ == "__main__":
-    buy, sell = flag_create()
-    print(buy, len(buy))
-    print(sell, len(sell))
+
+
+def output_order_sheet(buy, sell):
+    print("Buy")
+    for i in buy:
+        print(f"{lookup_type_id(i)}")
+    print("Sell")
+    for i in sell:
+        print(f"{lookup_type_id(i)}")
