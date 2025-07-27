@@ -5,8 +5,8 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 import os
 import time
-from fuzzworks_call import BuySellStats
-
+from fuzzworks_call import BuySellStats, fuzzworks_call
+from mokaam_call import mokaam_call
 """
 CREATE TABLE IF NOT EXISTS {database_name} (\n{database_scheme});
 """
@@ -139,7 +139,7 @@ def post_historical_data(
         vwap_week, vwap_month, vwap_quarter, vwap_year,
         _52w_low, _52w_high, std_dev_week, std_dev_month, std_dev_quarter, std_dev_year
     ) VALUES (
-        '{datetime.datetime.now()}', {typeid}, '{last_data}',
+        '{datetime.now()}', {typeid}, '{last_data}',
         {vol_yesterday}, {vol_week}, {vol_month}, {vol_quarter}, {vol_year},
         {avg_price_yesterday}, {avg_price_week}, {avg_price_month}, {avg_price_quarter}, {avg_price_year},
         {order_count_yesterday}, {order_count_week}, {order_count_month}, {order_count_quarter}, {order_count_year},
@@ -578,10 +578,15 @@ def timestamp_guard(timestamp_path, cooldown = timedelta(days=1)):
                     try:
                         last_run_str = file.read().strip()
                         last_run = datetime.fromisoformat(last_run_str)
-                        if last_run.tzinfo is None:
+                        print(last_run_str)
+                        print(last_run)
+                        print(now)
+
+                        if last_run.tzinfo == None:
                             last_run = last_run.replace(tzinfo=timezone.utc)
-                        print(f"Unable to run: {func.__name__} too soon")
-                        return
+                        if now - last_run > cooldown:
+                            print(f"Unable to run: {func.__name__} too soon")
+                            return
                     except Exception as e:
                         print (f"Failed to parse timestamp, rerunning. Reason {e}")
             result = func(*args, **kwargs)

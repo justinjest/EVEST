@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from api_middleware import retry_api_call
 import requests
 import json
 import sqlite3
@@ -85,7 +86,7 @@ def get_typeids_as_list(db_path):
 
     return typeid_list
 
-
+@retry_api_call()
 def fuzzworks_call() -> Response:
     res = Response()
     station_id = get_preference("station_id")

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from api_middleware import retry_api_call
 import requests
 import json
 import sqlite3
@@ -170,7 +171,7 @@ class Response:
         # Neither an error or a response, must be handlded
         raise Exception("InvalidResponse")
 
-
+@retry_api_call()
 def mokaam_call() -> Response:
     region_id = get_preference("region_id")
     market_size = get_preference("market_size")

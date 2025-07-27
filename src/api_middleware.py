@@ -20,13 +20,17 @@ def retry_api_call(retries=3, delay=1):
             for attempt in range(1, retries + 1):
                 try:
                     response = api_function(*args, **kwargs)
-                    response.raise_for_status()  # raises HTTPError if status is 4xx or 5xx
+                    if response.error is not None:
+                        raise ValueError (response.error)  # raises HTTPError if status is 4xx or 5xx
                     return response.json()
                 except Exception as e:
                     print(f"[Attempt {attempt}] Error: {e}")
                     if attempt < retries:
                         time.sleep(delay)
                     else:
-                        raise RuntimeError(f"API failed after {retries} attempts") from e
+                        print(f"API failed after {retries} attempts")
+                        print ("Servers may be down, or other known issue")
+                        print ("Exiting")
+                        exit(0)
         return wrapper
     return decorator

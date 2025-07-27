@@ -36,6 +36,14 @@ os.makedirs(data_folder, exist_ok=True)
 #
 def init():
     if not os.path.exists(preference_path):
+        setup_preferences()
+        print("Preferences created")
+    try:
+        load_preferences(preference_path)
+    except:
+        # TK this needs to be narrowed down to a smaller error size
+        # The specific error I was thinikng of was when you have a
+        # preferences file but it has wrong values
         preferences = {
             "region_id": "10000002",
             "station_id": "60003760",
@@ -47,28 +55,9 @@ def init():
             "sell_broker_fee": "0.015",
         }
         save_preferences(preference_path, preferences)
-        print("Preferences created")
-    else:
-        try:
-            load_preferences(preference_path)
-        except:
-            # TK this needs to be narrowed down to a smaller error size
-            # The specific error I was thinikng of was when you have a
-            # preferences file but it has wrong values
-            preferences = {
-                "region_id": "10000002",
-                "station_id": "60003760",
-                "time": "month",
-                "market_size": "1000000000",
-                "market_volume": "300",
-                "sales_tax": "0.033",
-                "buy_broker_fee": "0.015",
-                "sell_broker_fee": "0.015",
-            }
-            save_preferences(preference_path, preferences)
-        print("Preferences created")
+    print("Preferences created")
 
-        print("Preferences loaded.")
+    print("Preferences loaded.")
 
 
 def startup_databases():
@@ -87,19 +76,7 @@ def startup_databases():
         create_transaction_database(transaction_db_path)
         print("Transaction table cleared.")
 
-def loop(p):
-    print("Flag create")
-    buy, sell = flag_create()
-    print("udpate dbs")
-    update_dbs()
-    print("Update player")
-    update_player(buy, sell, p)
-    print_player(p)
-    print("Update order_sheet")
-    output_order_sheet(buy, sell)
-
 def main():
-    setup_preferences()
     init()
     startup_databases()
     p = Player()
