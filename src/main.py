@@ -135,8 +135,6 @@ def main():
     startup_databases()
     populate_live_database()
     print("Import complete")
-    buy = create_buy_list()
-    sell = create_sell_list()
     buy, sell = flag_create()
     print("BUY:")
     for i in buy:
@@ -144,8 +142,17 @@ def main():
     print("SELL:")
     for i in sell:
         print(f"{lookup_type_id(i)}")
+'''
+    buy = create_buy_list()
+    sell = create_sell_list()
+
+    print("BUY:")
+    for i in buy:
+        print(f"{lookup_type_id(i)}")
+    print("SELL:")
+    for i in sell:
+        print(f"{lookup_type_id(i)}")
     print("In main loop")
-    '''
    while True:
         sleep(60*15)
         drop_db(live_db_path, "live_db")

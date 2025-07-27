@@ -10,7 +10,7 @@ preference_path = "./data/preference.ini"
 
 def get_mokaam_data():
     time = get_preference("time")
-    request = f"SELECT typeid, avg_price_{time} from historical_db"
+    request = f"SELECT typeid, high_{time} from historical_db"
 
     try:
         with sqlite3.connect(historical_db_path) as conn:
