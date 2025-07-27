@@ -3,6 +3,7 @@
 from db_middleware import update_dbs
 from buy_sell import output_order_sheet, flag_create
 from profit_tracker import Player, update_player, print_player
+from set_preferences import setup_preferences
 
 import os
 
@@ -22,6 +23,9 @@ def player_orders(p):
     update_player(buy, sell, p)
     print_player(p)
 
+def update_preferences():
+    setup_preferences()
+
 def quit_program():
     exit(0)
 
@@ -33,7 +37,9 @@ def repl_loop():
         "1": update_database,
         "2": produce_order_sheet,
         "3": lambda: player_orders(p),
-        "4": quit_program}
+        "4": update_preferences,
+        "5": quit_program
+    }
 
 
     while True:
@@ -41,7 +47,8 @@ def repl_loop():
         print("1) Update database")
         print("2) Output buy and sell sheet")
         print("3) Make transactions")
-        print("4) Quit")
+        print("4) Update preferences")
+        print("5) Quit")
         choice = input("Choose an option: ").strip()
         action = menu_actions.get(choice)
         if action:

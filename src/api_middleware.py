@@ -30,7 +30,7 @@ def retry_api_call(retries=3, delay=1):
                     else:
                         print(f"API failed after {retries} attempts")
                         print ("Servers may be down, or other known issue")
-                        print ("Exiting")
-                        exit(0)
+                        print ("Leaving call")
+                        exit(1)
         return wrapper
     return decorator
