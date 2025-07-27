@@ -6,21 +6,30 @@ station_to_region = {
     "Amarr VIII": {"station_id": 60008494, "region_id": 10000043},
 }
 
+time_options = {
+    "One week": "week",
+    "One month": "month",
+    "One quarter": "quarter",
+    "One year": "year",
+}
+
+
 def input_percentage(prompt):
     res = None
     while res == None:
         percent = input(prompt).strip().replace("%", "")
         try:
-            return float(percent) /100
+            return float(percent) / 100
         except:
             pass
+
 
 def setup_preferences():
     choice = None
     while choice == None:
-        print("Choose a station:")
+        print("In which station will you be trading?")
         for i, name in enumerate(station_to_region):
-            print(f"{i+1}. {name}")
+            print(f"{i + 1}. {name}")
         try:
             tmp = int(input("enter choice number: "))
             if tmp in range(1, len(station_to_region) + 1):
@@ -33,13 +42,24 @@ def setup_preferences():
     time_options = ["week", "month", "quarter", "year"]
     time = None
     while time == None:
-        tmp = input("Time period (week/month/quarter/year): ").strip().lower()
-        if tmp in time_options:
-            time = tmp
+        print(
+            "How far back do you want to calculate market history for price comparisons?"
+        )
+        for i, time in enumerate(time_options):
+            print(f"{i + 1}. {time}")
+        try:
+            tmp = int(input("enter choice number: "))
+            if tmp in range(1, len(time_options) + 1):
+                choice = tmp
+        except ValueError:
+            pass
+        time = list(time_options)[choice - 1]
 
     market_size = None
     while market_size == None:
-        tmp = input("Market size (ISK moved): ").strip()
+        tmp = input(
+            f"Market size (only show items that move this much ISK per {time}): "
+        ).strip()
         try:
             int(tmp)
             market_size = tmp
@@ -48,7 +68,9 @@ def setup_preferences():
 
     market_volume = None
     while market_volume == None:
-        tmp = input("Market volume (items moved): ").strip()
+        tmp = input(
+            f"Minimum market volume filter (only show an item when it has moved this many items moved per {time}): "
+        ).strip()
         try:
             int(tmp)
             market_volume = tmp
@@ -71,6 +93,7 @@ def setup_preferences():
     }
 
     save_preferences("./data/preferences.ini", preferences)
+
 
 if __name__ == "__main__":
     setup_preferences()
