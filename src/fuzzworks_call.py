@@ -73,7 +73,9 @@ def get_typeids_as_list(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT typeid FROM historical_db")
+    time = get_preference("time", "./data/preferences.ini")
+    print(time)
+    cursor.execute(f"SELECT typeid FROM historical_db;")
 
     typeids = cursor.fetchall()
 
@@ -126,7 +128,7 @@ def fuzzworks_call() -> Response:
                                 "sell": stats["sell"],
                             }
                         )
-                        print("Added data to dictionary")
+                    print("Added data to dictionary")
                 else:
                     print("Raw data is not a dictionary")
                     res.error = "Unexpected response format"
@@ -158,6 +160,9 @@ def fuzzworks_call() -> Response:
 
 
 if __name__ == "__main__":
+    dat = get_typeids_as_list(historical_db_path)
+    print(dat)
     res = fuzzworks_call()
     print(res)
     print(res.get_val())
+

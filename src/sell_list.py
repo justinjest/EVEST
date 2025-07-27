@@ -51,9 +51,8 @@ def create_sell_list():
     sell_list = []
     for i in liv_data.keys():
         if i in his_data:
-            if liv_data[i] > his_data[i] * 0.90:
+            if liv_data[i] < his_data[i] * 0.90:
                 sell_list.append(i)
-                print(f"Sell: {i} price: {his_data[i] / liv_data[i]}")
     return sell_list
 
 if __name__ == "__main__":

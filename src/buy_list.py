@@ -53,7 +53,6 @@ def create_buy_list():
         if i in his_data:
             if liv_data[i] < his_data[i] * 0.90:
                 buy_list.append(i)
-                print(f"Buy: {i} price: {his_data[i] / liv_data[i]}")
     return buy_list
 
 if __name__ == "__main__":

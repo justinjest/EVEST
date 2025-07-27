@@ -29,12 +29,11 @@ def lookup_type_id(typeId: int):
     query = f"SELECT typeName from invTypes where typeID = {typeId}"
     try:
         with sqlite3.connect(database_path) as conn:
-            print(f"Opened SQLite database with version {sqlite3.sqlite_version}")
             cursor = conn.cursor()
             result = cursor.execute(query)
-
-            if result.fetchone():
-                return result.fetchone()[0]
+            res = result.fetchone()
+            if res:
+                return res[0]
             else:
                 return "Not Found"
     except sqlite3.OperationalError as e:
