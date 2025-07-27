@@ -88,14 +88,14 @@ def startup_databases():
 
 def loop(p):
     print("Flag create")
-    buy, sell = flag_create()
+    #buy, sell = flag_create()
     print("udpate dbs")
-    update_dbs()
+    #update_dbs()
     print("Update player")
-    update_player(buy, sell, p)
-    print_player(p)
+    #update_player(buy, sell, p)
+    #print_player(p)
     print("Update order_sheet")
-    output_order_sheet(buy, sell)
+    #output_order_sheet(buy, sell)
 
 def output_order_sheet(buy, sell):
     print("Buy")

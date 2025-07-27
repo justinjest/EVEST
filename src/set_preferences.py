@@ -21,9 +21,12 @@ def setup_preferences():
         print("Choose a station:")
         for i, name in enumerate(station_to_region):
             print(f"{i+1}. {name}")
-        tmp = int(input("enter choice number: "))
-        if tmp in range(1, len(station_to_region) + 1):
-            choice = tmp
+        try:
+            tmp = int(input("enter choice number: "))
+            if tmp in range(1, len(station_to_region) + 1):
+                choice = tmp
+        except ValueError:
+            pass
     station_name = list(station_to_region.keys())[choice - 1]
     station_info = station_to_region[station_name]
 
