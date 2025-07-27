@@ -16,7 +16,7 @@ time_options = {
 
 def input_percentage(prompt):
     res = None
-    while res == None:
+    while res is None:
         percent = input(prompt).strip().replace("%", "")
         try:
             return float(percent) / 100
@@ -26,7 +26,7 @@ def input_percentage(prompt):
 
 def setup_preferences():
     choice = None
-    while choice == None:
+    while choice is None:
         print("In which station will you be trading?")
         for i, name in enumerate(station_to_region):
             print(f"{i + 1}. {name}")
@@ -41,7 +41,7 @@ def setup_preferences():
 
     time_options = ["week", "month", "quarter", "year"]
     time = None
-    while time == None:
+    while time is None:
         print(
             "How far back do you want to calculate market history for price comparisons?"
         )
@@ -56,7 +56,7 @@ def setup_preferences():
         time = list(time_options)[choice - 1]
 
     market_size = None
-    while market_size == None:
+    while market_size is None:
         tmp = input(
             f"Market size (only show items that move this much ISK per {time}): "
         ).strip()
@@ -67,7 +67,7 @@ def setup_preferences():
             continue
 
     market_volume = None
-    while market_volume == None:
+    while market_volume is None:
         tmp = input(
             f"Minimum market volume filter (only show an item when it has moved this many items moved per {time}): "
         ).strip()
