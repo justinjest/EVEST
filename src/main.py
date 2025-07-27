@@ -90,7 +90,6 @@ def startup_databases():
         print("Live table found. Clearing live table data.")
         drop_db(live_db_path, "live_db")
         create_live_table()
-    populate_live_database()
 
     # Historical start up
     if not os.path.exists(historical_db_path):
@@ -158,8 +157,12 @@ def loop(buy, sell, p):
         item = get_live_item(i)
         p.sell_item(i, item["sell_weighted_average"])
         print(f"{lookup_type_id(i)}")
-    print(p.funds)
-    print(p.items)
+    print("User currently has: {} isk", p.funds)
+    items = p.items
+    for item in items:
+        print(f"{lookup_type_id(item)}")
+        print(f"Avg buy price{item[0]}")
+        print(f"Num in inventory{item[1]}")
     if buy != new_buy:
         print("Buy")
         for i in new_buy:
@@ -174,11 +177,18 @@ def loop(buy, sell, p):
         sell = new_sell
     else:
         print("no new sells")
+    print("User currently has: {} isk", p.funds)
+    items = p.items
+    for item in items:
+        print(f"{lookup_type_id(item)}")
+        print(f"Avg buy price{item[0]}")
+        print(f"Num in inventory{item[1]}")
+
     return new_buy, new_sell
 
 def main():
     init()
-    # startup_databases()
+    startup_databases()
     p = Player()
     print("Import complete")
     print("In main loop")
