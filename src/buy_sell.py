@@ -2,6 +2,7 @@
 #
 import sqlite3
 from preferences import get_preference
+from typeids import lookup_type_id
 from db_middleware import get_live_item, get_historical_item
 
 historical_db_path = "./data/historical.db"

@@ -12,6 +12,7 @@ from buy_sell import flag_create, output_order_sheet
 from typeids import lookup_type_id
 from profit_tracker import Player, create_transaction_database, print_player, update_player
 from set_preferences import setup_preferences
+from repl import repl_loop
 # from discordInit import bot_init
 
 
@@ -90,12 +91,12 @@ def loop(p):
     print("Flag create")
     buy, sell = flag_create()
     print("udpate dbs")
-    #update_dbs()
+    update_dbs()
     print("Update player")
     update_player(buy, sell, p)
     print_player(p)
     print("Update order_sheet")
-    #output_order_sheet(buy, sell)
+    output_order_sheet(buy, sell)
 
 def main():
     setup_preferences()
@@ -104,9 +105,6 @@ def main():
     p = Player()
     print("Import complete")
     print("In main loop")
-    while True:
-        loop(p)
-        sleep(60*30)
-
+    repl_loop()
 if __name__ == "__main__":
     main()
