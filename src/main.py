@@ -20,7 +20,7 @@ from buy_list import flag_create
 from sell_list import create_sell_list
 from typeids import lookup_type_id
 from profit_tracker import Player, create_transaction_database
-
+from set_preferences import setup_preferences
 # from discordInit import bot_init
 
 
@@ -148,12 +148,12 @@ def populate_live_database():
 def loop(buy, sell, p):
     new_buy, new_sell = flag_create()
     print("BUY:")
-    for i in buy:
+    for i in new_buy:
         item = get_live_item(i)
         p.buy_item(i, item["buy_weighted_average"])
         print(f"{lookup_type_id(i)}")
     print("SELL:")
-    for i in sell:
+    for i in new_sell:
         item = get_live_item(i)
         p.sell_item(i, item["sell_weighted_average"])
         print(f"{lookup_type_id(i)}")
@@ -187,6 +187,7 @@ def loop(buy, sell, p):
     return new_buy, new_sell
 
 def main():
+    setup_preferences()
     init()
     startup_databases()
     p = Player()

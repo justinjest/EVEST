@@ -10,7 +10,7 @@ def input_percentage(prompt):
     percent = input(prompt).strip().replace("%", "")
     return float(percent) / 100
 
-def main():
+def setup_preferences():
     print("Choose a station:")
     for i, name in enumerate(station_to_region):
         print(f"{i+1}. {name}")
@@ -39,5 +39,4 @@ def main():
     save_preferences("./data/preferences.ini", preferences)
 
 if __name__ == "__main__":
-    main()
-
+    setup_preferences()
