@@ -59,7 +59,7 @@ class Player:
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (timestamp, action, item_id, price, units, total, self.funds))
 
-def init_db(db_path="./data/transactions.db"):
+def create_transaction_database(db_path="./data/transactions.db"):
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("""

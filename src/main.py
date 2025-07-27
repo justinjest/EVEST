@@ -11,6 +11,7 @@ from db_middleware import (
     post_live_data,
     post_historical_data,
     drop_db,
+    get_live_item
 )
 from db_middleware import get_historical_item, get_db_size
 from mokaam_call import mokaam_call
@@ -18,12 +19,15 @@ from buy_list import create_buy_list
 from buy_list import flag_create
 from sell_list import create_sell_list
 from typeids import lookup_type_id
+from profit_tracker import Player, create_transaction_database
+
 # from discordInit import bot_init
 
 
 # Magic paths etc live here
 historical_db = "historical.db"
 live_db = "live.db"
+transactions = "transactions.db"
 preferences = "preferences.ini"
 
 data_folder = "./data/"
@@ -31,6 +35,7 @@ data_folder = "./data/"
 historical_db_path = os.path.join(data_folder, historical_db)
 live_db_path = os.path.join(data_folder, live_db)
 preference_path = os.path.join(data_folder, preferences)
+transaction_path = os.path.join(data_folder, transactions)
 
 os.makedirs(data_folder, exist_ok=True)
 
@@ -77,7 +82,7 @@ def init():
 def startup_databases():
     timestamp = "./data/lastrun.txt"
     today = datetime.now().date()
-
+    # live start up
     if not os.path.exists(live_db_path):
         print("Unable to find live table, now creating")
         create_live_table()
@@ -85,7 +90,9 @@ def startup_databases():
         print("Live table found. Clearing live table data.")
         drop_db(live_db_path, "live_db")
         create_live_table()
+    populate_live_database()
 
+    # Historical start up
     if not os.path.exists(historical_db_path):
         print("Unable to find historical table, now creating")
         create_historical_table()
@@ -108,6 +115,16 @@ def startup_databases():
                 file.write(str(today))
             populate_historical_database()
 
+    # Transaction startup
+    if not os.path.exists(transaction_db_path):
+        print("Unable to find transaction table, now creating")
+        create_transaction_database(transaction_db_path)
+    else:
+        print("Clearing transaction table data.")
+        drop_db(transaction_db_path, "transaction_db")
+        create_transaction_database(transaction_db_path)
+        print("Transaction table cleared.")
+
 
 def populate_historical_database():
     res = mokaam_call()
@@ -129,51 +146,50 @@ def populate_live_database():
         print(f"{res.response[key].as_post_data()}")
         post_live_data(live_db_path, res.response[key])
 
+def loop(buy, sell, p):
+    new_buy, new_sell = flag_create()
+    print("BUY:")
+    for i in buy:
+        item = get_live_item(i)
+        p.buy_item(i, item["buy_weighted_average"])
+        print(f"{lookup_type_id(i)}")
+    print("SELL:")
+    for i in sell:
+        item = get_live_item(i)
+        p.sell_item(i, item["sell_weighted_average"])
+        print(f"{lookup_type_id(i)}")
+    print(p.funds)
+    print(p.items)
+    if buy != new_buy:
+        print("Buy")
+        for i in new_buy:
+            print(f"{lookup_type_id(i)}")
+        buy = new_buy
+    else:
+        print("no new buys")
+    if sell != new_sell:
+        print("Sell")
+        for i in new_sell:
+            print(f"{lookup_type_id(i)}")
+        sell = new_sell
+    else:
+        print("no new sells")
+    return new_buy, new_sell
 
 def main():
     init()
-    startup_databases()
-    populate_live_database()
+    # startup_databases()
+    p = Player()
     print("Import complete")
-    buy, sell = flag_create()
-    print("BUY:")
-    for i in buy:
-        print(f"{lookup_type_id(i)}")
-    print("SELL:")
-    for i in sell:
-        print(f"{lookup_type_id(i)}")
-'''
-    buy = create_buy_list()
-    sell = create_sell_list()
-
-    print("BUY:")
-    for i in buy:
-        print(f"{lookup_type_id(i)}")
-    print("SELL:")
-    for i in sell:
-        print(f"{lookup_type_id(i)}")
     print("In main loop")
-   while True:
-        sleep(60*15)
+    buy = []
+    sell = []
+    while True:
         drop_db(live_db_path, "live_db")
         create_live_table()
         populate_live_database()
-        new_buy = create_buy_list()
-        new_sell = create_sell_list()
-        if buy != new_buy:
-            print("Buy")
-            for i in new_buy:
-                print(f"{lookup_type_id(i)}")
-            buy = new_buy
-        else:
-            print("no new buys")
-        if sell != new_sell:
-            print("Sell")
-            for i in new_sell:
-                print(f"{lookup_type_id(i)}")
-            sell = new_sell
-        else:
-            print("no new sells")
-   '''
+        buy, sell = loop(buy, sell, p)
+        sleep(60*30)
+
 if __name__ == "__main__":
     main()
