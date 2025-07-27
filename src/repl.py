@@ -7,6 +7,9 @@ from set_preferences import setup_preferences
 
 import os
 
+hist_timestamp = "./data/timestamp_hist"
+live_timestamp = "./data/timestamp_live"
+
 
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
@@ -29,10 +32,20 @@ def update_preferences():
 def quit_program():
     exit(0)
 
-def repl_loop():
-    clear_screen()
-    p = Player()
+def print_timestamps():
+    if os.path.exists(hist_timestamp):
+        with open(hist_timestamp, "r") as file:
+            last_run = file.read().strip()
+            print (f"Historical db last updated at {last_run} EvE Time")
+    if os.path.exists(live_timestamp):
+        with open(live_timestamp, "r") as file:
+            last_run = file.read().strip()
+            print (f"Historical db last updated at {last_run} EvE Time")
 
+
+def repl_loop(p):
+    clear_screen()
+    print_timestamps()
     menu_actions = {
         "1": update_database,
         "2": produce_order_sheet,

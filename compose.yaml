@@ -6,6 +6,4 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - evest_data:/data
-volumes:
-  evest_data: {}
+      - ./data:/data

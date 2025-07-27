@@ -82,6 +82,6 @@ def main():
     p = Player()
     print("Import complete")
     print("In main loop")
-    repl_loop()
+    repl_loop(p)
 if __name__ == "__main__":
     main()
