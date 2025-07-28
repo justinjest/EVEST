@@ -352,6 +352,7 @@ def timestamp_guard(timestamp_path, cooldown=timedelta(days=1)):
 
 @timestamp_guard("./data/timestamp_hist")
 def hist_update(path):
+    print("Updating historical database")
     if os.path.exists(path):
         drop_db(path, "historical_db")
     create_historical_table()
@@ -360,6 +361,7 @@ def hist_update(path):
 
 @timestamp_guard("./data/timestamp_live", cooldown=timedelta(minutes=15))
 def live_update(path):
+    print("Updating live database")
     if os.path.exists(path):
         drop_db(path, "live_db")
     create_live_table()
