@@ -6,7 +6,6 @@ from time import sleep
 from fuzzworks_call import fuzzworks_call
 from preferences import save_preferences, load_preferences
 from db_middleware import *
-from db_middleware import get_historical_item, get_db_size
 from mokaam_call import mokaam_call
 from buy_sell import flag_create, output_order_sheet
 from typeids import lookup_type_id
