@@ -71,7 +71,8 @@ class Player:
 def create_transaction_database(db_path="./data/transactions.db"):
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("""
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 timestamp TEXT,
@@ -82,7 +83,8 @@ def create_transaction_database(db_path="./data/transactions.db"):
                 total REAL,
                 funds_after REAL
             )
-        """)
+        """
+        )
 
 
 def print_player(p):
@@ -102,5 +104,3 @@ def update_player(buy, sell, p):
     for i in sell:
         data = get_live_item(i)
         p.sell_item(i, data["sell_weighted_average"])
-
-
