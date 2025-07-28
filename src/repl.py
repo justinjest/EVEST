@@ -76,3 +76,26 @@ def repl_loop(p):
                 print(f"[ERROR] Something went wrong: {e}")
         else:
             print("Invalid option, please try again.")
+
+def order_repl(buy, sell):
+
+    menu_actions = {
+        "1": lambda: to_clipboard(buy),
+        "2": lambda: to_clipboard(sell)
+    }
+    while True:
+        print("=== Order Book ===")
+        print("1) Copy buy")
+        print("2) Copy sell")
+        print("3) exit to main menu")
+        choice = input("Choose an option: ").strip()
+        action = menu_actions.get(choice)
+        if input == "3":
+            break
+        if actions:
+            try:
+                action()
+            except Exception as e:
+                print(f"[ERROR] Something wen wrong: {e}")
+            else:
+                print("Invalid option, please try again.")
