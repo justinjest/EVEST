@@ -1,6 +1,11 @@
 ![EVEST: EVE Station Trader logo](/static/evest-logo.webp)
 
-![GitHub repo](https://img.shields.io/badge/built%20for-Boot.dev%20Hackathon-blueviolet)
+<!-- badges: start -->
+
+[![GitHub License](https://badgen.net/github/license/justinjest/EVEST)](https://github.com/justinjest/EVEST/licence.md)
+![Built for Boot.dev Hackathon](https://img.shields.io/badge/built%20for-Boot.dev%20Hackathon-blueviolet)
+
+<!-- badges: end -->
 
 ## So you wanna be space rich...
 
@@ -17,6 +22,10 @@ EVEST monitors the market to let you know when an item in your chosen location i
 Meanwhile, EVEST is toiling away in the background, like your very own nullsec miner, trapped in a mixture of Stockholm syndrome and not knowing any better. When you're ready to cash out, run EVEST again, and it will let you know what's trading higher than usual--time to sell!
 
 It's medium-term swing trading, the lazy way.
+
+## See it in action:
+
+[!demo](./static/evest-demo.mp4)
 
 ## Installing EVEST
 
@@ -52,6 +61,7 @@ python3 ./src/main.py
 When you run the file for the first time you will generate a preference file in ./data. This will enable you to set the range of items you want to look at, and limit your buy and sell orders to only items that are relevent to you.
 
 For a reasonable set of defaults you can use:
+
 - Station: 1
 - time = Quarter
 - market_size = 1500000000
