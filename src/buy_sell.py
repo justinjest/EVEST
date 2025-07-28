@@ -42,7 +42,7 @@ def flag_create():
     avg_min_col = f"low_{timeframe}"
     avg_max_col = f"high_{timeframe}"
     std_dev_col = f"std_dev_{timeframe}"
-    avg_spread_col = f"avg_spread_{timeframe}"
+    avg_spread_col = f"spread_{timeframe}"
 
     item_ids = process_data_to_array(get_type_ids())
     buy = []
@@ -50,23 +50,26 @@ def flag_create():
     for typeid in item_ids:
         historical = get_historical_item(typeid)
         live = get_live_item(typeid)
-        avg_std_dev = historical[std_dev_col]
-        avg_spread = historical[avg_spread_col]
-        avg_sell = historical[avg_max_col]
-        avg_buy = historical[avg_min_col]
+        hist_std_dev = historical[std_dev_col]
+        hist_spread = historical[avg_spread_col]
+        hist_sell = historical[avg_max_col]
+        hist_buy = historical[avg_min_col]
 
         spread = float(live["sell_min"]) - float(live["buy_weighted_average"])
         buy_avg_now = live["buy_weighted_average"]
         sell_avg_now = live["sell_weighted_average"]
         buy_flag = (
-            float(buy_avg_now * (1.0 + buy_fee)) < avg_buy - avg_std_dev
-            and spread > avg_spread
-            and float(live["buy_stddev"]) < (avg_std_dev * 1.5)
+            float(buy_avg_now * (1.0 + buy_fee)) < hist_buy - hist_std_dev
+            and spread > hist_spread
+            and float(live["buy_stddev"]) < (hist_std_dev * 1.5)
             and float(live["buy_volume"]) > (float(live["sell_volume"]) / 5)
         )
 
-        sell_flag = float(sell_avg_now * (1.0 - sell_fee - sales_tax)) >= (
-            avg_sell + avg_std_dev
+        sell_flag = (
+            float(sell_avg_now * (1.0 - sell_fee - sales_tax))
+            >= (hist_sell + hist_std_dev) * 1.2
+            and spread > hist_spread
+            and float(live["sell_volume"]) > (float(live["buy_volume"]) / 5)
         )
 
         if buy_flag and sell_flag:
