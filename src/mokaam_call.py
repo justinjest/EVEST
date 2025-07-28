@@ -205,9 +205,3 @@ def mokaam_call() -> Response:
     return res
 
 
-if __name__ == "__main__":
-    res = mokaam_call()
-    val = res.get_val()
-    if res.error is not None:
-        raise exception("Failed to load historical data")
-    print(f"{res.response}")
