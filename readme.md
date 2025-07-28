@@ -9,7 +9,7 @@
 
 ## So you wanna be space rich...
 
-EVE Online is known for it's hard-working ~~victims~~ players. Folks that will gladly spend hundreds of hours hacking away on a spreadsheet that will make them .01 ISK more than the next capsuleer frantically refreshing buy orders.
+EVE Online is known for its dedicated ~~victims~~ players. Folks that will gladly spend hundreds of hours hacking away on a spreadsheet that will make them .01 ISK more than the next capsuleer frantically refreshing buy orders.
 
 It's no secret that mastering the market is the way to true pixel wealth in New Eden, but it's not easy.
 
