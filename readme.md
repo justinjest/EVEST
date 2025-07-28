@@ -4,7 +4,7 @@
 
 ## So you wanna be space rich...
 
-![eve logo](/static/eve-logo.webp)
+![evest logo](/static/evest-logo.webp)
 
 EVE Online is known for it's hard-working ~~victims~~ players. Folks that will gladly spend hundreds of hours hacking away on a spreadsheet that will make them .01 ISK more than the next capsuleer frantically refreshing buy orders.
 
