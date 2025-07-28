@@ -40,15 +40,16 @@ def update_preferences():
 def quit_program():
     exit(0)
 
+
 def print_timestamps():
     if os.path.exists(hist_timestamp):
         with open(hist_timestamp, "r") as file:
             last_run = file.read().strip()
-            print (f"Historical db last updated at {last_run} EvE Time")
+            print(f"Historical db last updated at {last_run} EvE Time")
     if os.path.exists(live_timestamp):
         with open(live_timestamp, "r") as file:
             last_run = file.read().strip()
-            print (f"Live db last updated at {last_run} EvE Time")
+            print(f"Live db last updated at {last_run} EvE Time")
 
 
 def repl_loop(p):
@@ -82,16 +83,12 @@ def repl_loop(p):
 
 
 def order_repl(buy, sell):
-
-    menu_actions = {
-        "1": lambda: to_clipboard(buy),
-        "2": lambda: to_clipboard(sell)
-    }
+    menu_actions = {"1": lambda: to_clipboard(buy), "2": lambda: to_clipboard(sell)}
     while True:
         print("=== Order Book ===")
-        print("1) Copy buy")
-        print("2) Copy sell")
-        print("3) exit to main menu")
+        print("1) Copy buy items to clipboard")
+        print("2) Copy sell items to clipboard")
+        print("3) Exit to main menu")
         choice = input("Choose an option: ").strip()
         action = menu_actions.get(choice)
         if choice == "3":
