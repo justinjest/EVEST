@@ -17,6 +17,7 @@ from profit_tracker import (
 )
 from set_preferences import setup_preferences
 from repl import repl_loop
+
 # from discordInit import bot_init
 
 
@@ -85,5 +86,7 @@ def main():
     print("Import complete")
     print("In main loop")
     repl_loop(p)
+
+
 if __name__ == "__main__":
     main()

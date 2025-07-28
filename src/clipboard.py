@@ -1,5 +1,6 @@
 import pyperclip
 
+
 def to_clipboard(array):
     string = "\n".join(map(str, array))
     pyperclip.copy(string)
@@ -7,4 +8,4 @@ def to_clipboard(array):
 
 
 if __name__ == "__main__":
-    to_clipboard([1,2])
+    to_clipboard([1, 2])

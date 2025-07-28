@@ -93,5 +93,3 @@ def setup_preferences():
     }
 
     save_preferences("./data/preferences.ini", preferences)
-
-

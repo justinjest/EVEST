@@ -4,6 +4,7 @@ import requests
 import json
 from secret import eveToken, charToken
 
+
 def eve_inventory_call():
 
     url = f"https://esi.evetech.net/characters/{charToken}/assets"
@@ -14,7 +15,7 @@ def eve_inventory_call():
         "X-Compatibility-Date": "2020-01-01",
         "X-Tenant": "",
         "Accept": "application/json",
-        "Authorization": eveToken
+        "Authorization": eveToken,
     }
 
     response = requests.get(url, headers=headers)
@@ -25,6 +26,6 @@ def eve_inventory_call():
     else:
         print("Unable to load data")
 
-def return_items_at_station(station_id, eve_inventory_json):
-    print (eve_inventory_json)
 
+def return_items_at_station(station_id, eve_inventory_json):
+    print(eve_inventory_json)

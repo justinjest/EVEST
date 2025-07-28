@@ -203,5 +203,3 @@ def mokaam_call() -> Response:
         res.error = response.status_code
         print(f"Error: {response.status_code}")
     return res
-
-
