@@ -59,7 +59,7 @@ def flag_create():
         buy_avg_now = live["buy_weighted_average"]
         sell_avg_now = live["sell_weighted_average"]
         buy_flag = (
-            float(buy_avg_now * (1.0 + buy_fee)) < hist_buy - hist_std_dev
+            float(buy_avg_now * (1.0 + buy_fee)) < (hist_buy - hist_std_dev) * 0.9
             and spread > hist_spread
             and float(live["buy_stddev"]) < (hist_std_dev * 1.5)
             and float(live["buy_volume"]) > (float(live["sell_volume"]) / 5)
