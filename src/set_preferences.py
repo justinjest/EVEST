@@ -95,5 +95,3 @@ def setup_preferences():
     save_preferences("./data/preferences.ini", preferences)
 
 
-if __name__ == "__main__":
-    setup_preferences()
