@@ -4,7 +4,7 @@ from db_middleware import update_dbs
 from buy_sell import output_order_sheet, flag_create
 from profit_tracker import Player, update_player, print_player
 from set_preferences import setup_preferences
-
+from typeids import lookup_type_id
 import os
 
 hist_timestamp = "./data/timestamp_hist"
@@ -22,6 +22,7 @@ def update_database():
 def produce_order_sheet():
     buy, sell = flag_create()
     output_order_sheet(buy, sell)
+    order_repl(buy, sell)
 
 
 def player_orders(p):
@@ -77,11 +78,18 @@ def repl_loop(p):
         else:
             print("Invalid option, please try again.")
 
+
+def to_clipboard_tmp(array):
+    res = []
+    for i in array:
+       res.append(lookup_type_id(i))
+    print(res)
+
 def order_repl(buy, sell):
 
     menu_actions = {
-        "1": lambda: to_clipboard(buy),
-        "2": lambda: to_clipboard(sell)
+        "1": lambda: to_clipboard_tmp(buy),
+        "2": lambda: to_clipboard_tmp(sell)
     }
     while True:
         print("=== Order Book ===")
@@ -90,12 +98,12 @@ def order_repl(buy, sell):
         print("3) exit to main menu")
         choice = input("Choose an option: ").strip()
         action = menu_actions.get(choice)
-        if input == "3":
+        if choice == "3":
             break
-        if actions:
+        if menu_actions:
             try:
                 action()
             except Exception as e:
-                print(f"[ERROR] Something wen wrong: {e}")
+                print(f"[ERROR] Something went wrong: {e}")
             else:
                 print("Invalid option, please try again.")
