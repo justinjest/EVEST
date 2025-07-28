@@ -16,17 +16,32 @@ Meanwhile, EVEST is toiling away in the background, like your very own nullsec m
 
 It's medium-term swing trading, the lazy way.
 
-## Installing & Running EVEST
+### Installing EVEST
 
-### In your terminal
+1. **Clone the Repository**:
 
-After you have pulled the repo all you need to do is run `python3 ./src/main.py`.
+   ```bash
+   git clone https://github.com/justinjest/EVEST
+   ```
 
-### In docker
+2. **Navigate to the Project**:
 
-After you pull the repo you can instead run `docker compose run --rm evest` to keep your files in a docker container.
+   ```bash
+   cd EVEST
+   ```
 
-## Operation
+3. **Install Required Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Using EVEST
+
+To start the program, run:
+
+```bash
+python3 ./src/main.py
+```
 
 ### Preferences
 
