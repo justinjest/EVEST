@@ -62,6 +62,7 @@ def post_live_data(live_db_path, stats: BuySellStats):
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
+
 def post_bulk_live_data(live_db_path, stats_list: list[BuySellStats]):
     insert_sql = """INSERT INTO live_db (
         typeid, buy_weighted_average, buy_max, buy_min, buy_stddev, buy_median, 
@@ -100,7 +101,6 @@ def post_bulk_live_data(live_db_path, stats_list: list[BuySellStats]):
             conn.commit()
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
-
 
 
 def post_historical_data(
