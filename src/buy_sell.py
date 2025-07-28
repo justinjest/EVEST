@@ -63,6 +63,13 @@ def flag_create():
             and spread > hist_spread
             and float(live["buy_stddev"]) < (hist_std_dev * 1.5)
             and float(live["buy_volume"]) > (float(live["sell_volume"]) / 5)
+            and (
+                (float(sell_avg_now) * (1.0 - sell_fee - sales_tax))
+                - (float(buy_avg_now) * (1.0 + buy_fee))
+            )
+            / float(buy_avg_now)
+            * 100
+            > 5.0
         )
 
         sell_flag = (
