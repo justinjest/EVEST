@@ -45,7 +45,7 @@ def print_timestamps():
     if os.path.exists(live_timestamp):
         with open(live_timestamp, "r") as file:
             last_run = file.read().strip()
-            print (f"Historical db last updated at {last_run} EvE Time")
+            print (f"Live db last updated at {last_run} EvE Time")
 
 
 def repl_loop(p):
