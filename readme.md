@@ -10,7 +10,7 @@ It's no secret that mastering the market is the way to true pixel wealth in New 
 
 Or at least it wasn't.
 
-## Introducing...
+## Introducing EVEST: EVE Station Trader
 
 EVEST monitors the market to let you know when an item in your chosen location is trading at a certain percentage below its usual price. When you're ready to make sweet ISK, you can generate a list of things currently trading lower than average. Log in, snap up the deals, and spin your pretty spaceships.
 
