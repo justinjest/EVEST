@@ -24,7 +24,7 @@ After you have pulled the repo all you need to do is run `python3 ./src/main.py`
 
 ### In docker
 
-After you pull the repo you can instead run `docker compose run -rm evest` to keep your files in a docker container.
+After you pull the repo you can instead run `docker compose run --rm evest` to keep your files in a docker container.
 
 ## Operation
 
