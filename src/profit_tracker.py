@@ -104,14 +104,3 @@ def update_player(buy, sell, p):
         p.sell_item(i, data["sell_weighted_average"])
 
 
-if __name__ == "__main__":
-    drop_db("./data/transactions.db", "transactions")
-    init_db()
-    p = Player()
-    p.buy_item(item_id=34, price=100000)
-    p.sell_item(item_id=34, price=120000)
-
-    if p.is_bankrupt():
-        print("Bankrupt")
-    else:
-        print(f"Funds: {p.funds}")
