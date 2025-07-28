@@ -25,7 +25,7 @@ It's medium-term swing trading, the lazy way.
 
 ## See it in action:
 
-[!demo](./static/evest-demo.mp4)
+[!demo](./static/evest-demo.gif)
 
 ## Installing EVEST
 
