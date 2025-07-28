@@ -62,6 +62,46 @@ def post_live_data(live_db_path, stats: BuySellStats):
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
+def post_bulk_live_data(live_db_path, stats_list: list[BuySellStats]):
+    insert_sql = """INSERT INTO live_db (
+        typeid, buy_weighted_average, buy_max, buy_min, buy_stddev, buy_median, 
+        buy_volume, buy_order_count, buy_percentile, sell_weighted_average, 
+        sell_max, sell_min, sell_stddev, sell_median, sell_volume, 
+        sell_order_count, sell_percentile
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+
+    values = [
+        (
+            stats.typeid,
+            stats.buy.weightedAverage,
+            stats.buy.max,
+            stats.buy.min,
+            stats.buy.stddev,
+            stats.buy.median,
+            stats.buy.volume,
+            stats.buy.orderCount,
+            stats.buy.percentile,
+            stats.sell.weightedAverage,
+            stats.sell.max,
+            stats.sell.min,
+            stats.sell.stddev,
+            stats.sell.median,
+            stats.sell.volume,
+            stats.sell.orderCount,
+            stats.sell.percentile,
+        )
+        for stats in stats_list
+    ]
+
+    try:
+        with sqlite3.connect(live_db_path) as conn:
+            cursor = conn.cursor()
+            cursor.executemany(insert_sql, values)
+            conn.commit()
+    except sqlite3.OperationalError as e:
+        print("Failed to open database:", e)
+
+
 
 def post_historical_data(
     historical_db_path,
@@ -392,7 +432,4 @@ def populate_live_database():
         raise Exception(f"{res.error}")
     print("Recieved response")
     print("Moving data into db")
-    for key in res.response:
-        # We need to call the insert val into database here
-        # TK this needs to be batched in a loop into an object and then post to the db all at once.
-        post_live_data(live_db_path, res.response[key])
+    post_bulk_live_data(live_db_path, list(res.response.values()))
