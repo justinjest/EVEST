@@ -5,6 +5,8 @@ from buy_sell import output_order_sheet, flag_create
 from profit_tracker import Player, update_player, print_player
 from set_preferences import setup_preferences
 from typeids import lookup_type_id
+from clipboard import to_clipboard
+
 import os
 
 hist_timestamp = "./data/timestamp_hist"
@@ -79,17 +81,11 @@ def repl_loop(p):
             print("Invalid option, please try again.")
 
 
-def to_clipboard_tmp(array):
-    res = []
-    for i in array:
-       res.append(lookup_type_id(i))
-    print(res)
-
 def order_repl(buy, sell):
 
     menu_actions = {
-        "1": lambda: to_clipboard_tmp(buy),
-        "2": lambda: to_clipboard_tmp(sell)
+        "1": lambda: to_clipboard(buy),
+        "2": lambda: to_clipboard(sell)
     }
     while True:
         print("=== Order Book ===")
