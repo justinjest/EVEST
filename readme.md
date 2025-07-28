@@ -73,7 +73,7 @@ When you run the file for the first time you will generate a preference file in 
 
 > ... do we need to explain?
 
-### 🤝 Contributing
+### Contributing
 
 - **Clone the repo**
 
