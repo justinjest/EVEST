@@ -1,5 +1,7 @@
 # EVEST: EVE Station Trader
 
+![GitHub repo](https://img.shields.io/badge/built%20for-Boot.dev%20Hackathon-blueviolet)
+
 ## So you wanna be space rich...
 
 EVE Online is known for it's hard-working ~~victims~~ players. Folks that will gladly spend hundreds of hours hacking away on a spreadsheet that will make them .01 ISK more than the next capsuleer frantically refreshing buy orders.
@@ -8,7 +10,7 @@ It's no secret that mastering the market is the way to true pixel wealth in New 
 
 Or at least it wasn't.
 
-**Introducing EVEST: EVE Station Trader!**
+## Introducing EVEST: EVE Station Trader!
 
 EVEST monitors the market to let you know when an item in your chosen location is trading at a certain percentage below its usual price. When you're ready to make sweet ISK, you can generate a list of things currently trading lower than average. Log in, snap up the deals, and spin your pretty spaceships.
 
@@ -16,7 +18,7 @@ Meanwhile, EVEST is toiling away in the background, like your very own nullsec m
 
 It's medium-term swing trading, the lazy way.
 
-### Installing EVEST
+## Installing EVEST
 
 1. **Clone the Repository**:
 
@@ -49,22 +51,22 @@ When you run the file for the first time you will generate a preference file in 
 
 ### Menu Items
 
-#### Update databases
+- **Update databases**
 
 Updates databases so you're always looking at the newest possible information. Running this command will update your historical information if it's older than 1 day old, and your live information if it's older than 15 minutes.
 
-#### Display market opportunities
+- Display market opportunities
 
 Returns a list of items to consider trading based on the criteria you set in your preferences.
 
-#### Make transactions
+- Make transactions
 
 If you want to do some EVE-style paper trading, hit this button! An imaginary player will player will buy and sell the items that are on your current order sheet. Come back later to see if you've made a profit!
 
-#### Update preferences
+- Update preferences
 
 Allows you to update and fine-tune your preferences.
 
-#### Quit
+- Quit
 
-Quits the program. :'(
+... do we need to explain?
