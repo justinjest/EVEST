@@ -152,11 +152,3 @@ def fuzzworks_call() -> Response:
 
     print("Live data loaded!")
     return res
-
-
-if __name__ == "__main__":
-    dat = get_typeids_as_list(historical_db_path)
-    print(dat)
-    res = fuzzworks_call()
-    print(res)
-    print(res.get_val())
