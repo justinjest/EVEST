@@ -28,5 +28,3 @@ def eve_inventory_call():
 def return_items_at_station(station_id, eve_inventory_json):
     print (eve_inventory_json)
 
-if __name__ == "__main__":
-    eve_inventory_call()
