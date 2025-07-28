@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, time
 from functools import wraps
 import os
-import time
 from fuzzworks_call import BuySellStats, fuzzworks_call
 from mokaam_call import mokaam_call
 
@@ -357,7 +356,15 @@ def startup_databases():
         print("Transaction table cleared.")
 
 
-def timestamp_guard(timestamp_path, cooldown=timedelta(days=1)):
+def write_now_stamp(timestamp_path):
+   with open(timestamp_path, "w") as file:
+       file.write(datetime.now(timezone.utc).isoformat())
+
+def write_after_downtime(timestamp_path):
+    with open(timestamp_path, "w") as file:
+        file.write(datetime.combine(datetime.now().date(), time(hour=0, minute=30, tzinfo=timezone.utc)).isoformat())
+
+def timestamp_guard(timestamp_path, timestamp_func = write_now_stamp, cooldown=timedelta(days=1)):
     # Historical start up
     def decorator(func):
         @wraps(func)
@@ -381,16 +388,14 @@ def timestamp_guard(timestamp_path, cooldown=timedelta(days=1)):
                     except Exception as e:
                         print(f"Failed to parse timestamp, rerunning. Reason {e}")
             result = func(*args, **kwargs)
-            with open(timestamp_path, "w") as file:
-                file.write(now.isoformat())
+            timestamp_func(timestamp_path)
             return result
 
         return wrapper
 
     return decorator
 
-
-@timestamp_guard("./data/timestamp_hist")
+@timestamp_guard("./data/timestamp_hist", write_after_downtime)
 def hist_update(path):
     print("Updating historical database")
     if os.path.exists(path):

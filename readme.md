@@ -51,6 +51,15 @@ python3 ./src/main.py
 
 When you run the file for the first time you will generate a preference file in ./data. This will enable you to set the range of items you want to look at, and limit your buy and sell orders to only items that are relevent to you.
 
+For a reasonable set of defaults you can use:
+- Station: 1
+- time = Quarter
+- market_size = 1500000000
+- market_volume = 1200
+- tax = 3.5
+- buy brokerage fee = 1.5
+- sell brokerage fee = 1.5
+
 ### Menu Items
 
 - **Update databases**
