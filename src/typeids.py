@@ -38,7 +38,3 @@ def lookup_type_id(typeId: int):
                 return "Not Found"
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
-
-
-if __name__ == "__main__":
-    print(lookup_type_id(0))
