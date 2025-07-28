@@ -8,11 +8,10 @@ from db_middleware import get_live_item, get_historical_item
 historical_db_path = "./data/historical.db"
 live_db_path = "./data/live.db"
 preference_path = "./data/preference.ini"
-timeframe = get_preference("timeframe")
 
 
 def get_type_ids():
-    request = f"SELECT typeid from historical_db"
+    request = "SELECT typeid from historical_db"
     try:
         with sqlite3.connect(historical_db_path) as conn:
             cursor = conn.cursor()
@@ -33,17 +32,17 @@ def process_data_to_array(vals):
     return val
 
 
-# Column names
-avg_price_col = f"avg_price_{timeframe}"
-std_dev_col = f"std_dev_{timeframe}"
-avg_spread_col = f"avg_spread_{timeframe}"
-avg_vol_col = f"avg_vol_{timeframe}"
-
-
 def flag_create():
     sales_tax = float(get_preference("sales_tax"))
     buy_fee = float(get_preference("buy_broker_fee"))
     sell_fee = float(get_preference("sell_broker_fee"))
+
+    # Column names
+    timeframe = get_preference("time")
+    avg_min_col = f"low_{timeframe}"
+    avg_max_col = f"high_{timeframe}"
+    std_dev_col = f"std_dev_{timeframe}"
+    avg_spread_col = f"avg_spread_{timeframe}"
 
     item_ids = process_data_to_array(get_type_ids())
     buy = []
@@ -51,27 +50,23 @@ def flag_create():
     for typeid in item_ids:
         historical = get_historical_item(typeid)
         live = get_live_item(typeid)
-        avg_price = historical[avg_price_col]
         avg_std_dev = historical[std_dev_col]
         avg_spread = historical[avg_spread_col]
-        avg_vol = historical[avg_vol_col]
+        avg_sell = historical[avg_max_col]
+        avg_buy = historical[avg_min_col]
 
         spread = float(live["sell_min"]) - float(live["buy_weighted_average"])
-        buy_now = live["buy_max"]
-        sell_now = live["sell_min"]
-        buy_avg = live["buy_weighted_average"]
-        sell_avg = live["sell_weighted_average"]
+        buy_avg_now = live["buy_weighted_average"]
+        sell_avg_now = live["sell_weighted_average"]
         buy_flag = (
-            float(buy_avg * (1.0 + buy_fee)) < avg_price - avg_std_dev
+            float(buy_avg_now * (1.0 + buy_fee)) < avg_buy - avg_std_dev
             and spread > avg_spread
-            and float(live["buy_volume"]) < avg_vol
             and float(live["buy_stddev"]) < (avg_std_dev * 1.5)
             and float(live["buy_volume"]) > (float(live["sell_volume"]) / 5)
         )
 
-        sell_flag = (
-            float(sell_avg * (1.0 - sell_fee - sales_tax))
-            >= (avg_price + avg_std_dev) * 1.1
+        sell_flag = float(sell_avg_now * (1.0 - sell_fee - sales_tax)) >= (
+            avg_sell + avg_std_dev
         )
 
         if buy_flag and sell_flag:
