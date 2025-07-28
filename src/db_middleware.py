@@ -355,7 +355,6 @@ def hist_update(path):
     if os.path.exists(path):
         drop_db(path, "historical_db")
     create_historical_table()
-    print("Moving historical data into database")
     populate_historical_database()
 
 
@@ -364,7 +363,6 @@ def live_update(path):
     if os.path.exists(path):
         drop_db(path, "live_db")
     create_live_table()
-    print("Moving live data into database")
     populate_live_database()
 
 
@@ -378,6 +376,8 @@ def populate_historical_database():
 
     if res.error is not None:
         raise Exception(f"{res.error}")
+    print("Recieved response")
+    print("Moving data into db")
     for key in res.response:
         # TK this needs to be batched in a loop into an object and then post to the db all at once.
         # print(f"{res.response[key].as_post_data()}")
@@ -388,6 +388,8 @@ def populate_live_database():
     res = fuzzworks_call()
     if res.error is not None:
         raise Exception(f"{res.error}")
+    print("Recieved response")
+    print("Moving data into db")
     for key in res.response:
         # We need to call the insert val into database here
         # TK this needs to be batched in a loop into an object and then post to the db all at once.
