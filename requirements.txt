@@ -13,6 +13,7 @@ multidict==6.6.3
 propcache==0.3.2
 pydantic==2.11.7
 pydantic_core==2.33.2
+pyperclip=1.9.0
 requests==2.32.4
 typing-inspection==0.4.1
 typing_extensions==4.14.1
