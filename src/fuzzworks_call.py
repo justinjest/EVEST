@@ -74,8 +74,6 @@ def get_typeids_as_list(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    time = get_preference("time", "./data/preferences.ini")
-    print(time)
     cursor.execute(f"SELECT typeid FROM historical_db;")
 
     typeids = cursor.fetchall()
@@ -86,8 +84,10 @@ def get_typeids_as_list(db_path):
 
     return typeid_list
 
+
 @retry_api_call()
 def fuzzworks_call() -> Response:
+    print("Pulling live data...")
     res = Response()
     station_id = get_preference("station_id")
 
@@ -107,13 +107,11 @@ def fuzzworks_call() -> Response:
         types = ",".join(map(str, temparray))
         api_url = api_url_base + types
 
-
         response = requests.get(api_url)
 
         if response.status_code == 200:
             try:
                 raw_data = response.json()
-                print("Received raw JSON data")
                 if not raw_data:
                     print("Raw data is empty")
                     res.error = "Empty response from API"
@@ -138,8 +136,6 @@ def fuzzworks_call() -> Response:
                 return res
 
     if all_data:
-        for item in all_data:
-            print(f"typeid: {item['typeid']} (type: {type(item['typeid'])})")
         adapter = TypeAdapter(dict[int, BuySellStats])
         try:
             res.response = adapter.validate_python(
@@ -150,11 +146,11 @@ def fuzzworks_call() -> Response:
                 json.dump(
                     {item["typeid"]: item for item in all_data}, outfile, indent=4
                 )
-            print(f"Validated data has been written to {output_json}")
         except Exception as e:
             print("Validation error:", e)
             res.error = str(e)
 
+    print("Live data loaded!")
     return res
 
 

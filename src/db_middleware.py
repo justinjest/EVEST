@@ -7,6 +7,7 @@ import os
 import time
 from fuzzworks_call import BuySellStats, fuzzworks_call
 from mokaam_call import mokaam_call
+
 """
 CREATE TABLE IF NOT EXISTS {database_name} (\n{database_scheme});
 """
@@ -26,7 +27,6 @@ def create_db(database_path, table_name, database_scheme):
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print(f"Table {table_name} created successfully")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -38,7 +38,6 @@ def drop_db(database_path, table_name):
             cursor = conn.cursor()
             cursor.execute(schema)
             conn.commit()
-            print(f"Table {table_name} dropped")
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
@@ -183,7 +182,6 @@ def create_live_table():
     create_db(live_db_path, "live_db", live_scheme)
 
 
-
 def create_historical_table():
     historical_scheme = """
     typeid INTEGER PRIMARY KEY,
@@ -264,6 +262,7 @@ def get_historical_item(typeId: int):
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
+
 def get_live_item(typeId: int):
     if not isinstance(typeId, int):
         raise ValueError("Can't lookup value of non int")
@@ -280,7 +279,6 @@ def get_live_item(typeId: int):
                 return "Not Found"
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
-
 
 
 def get_db_size(database_path, database_name) -> int:
@@ -566,7 +564,8 @@ def startup_databases():
         create_transaction_database(transaction_db_path)
         print("Transaction table cleared.")
 
-def timestamp_guard(timestamp_path, cooldown = timedelta(days=1)):
+
+def timestamp_guard(timestamp_path, cooldown=timedelta(days=1)):
     # Historical start up
     def decorator(func):
         @wraps(func)
@@ -588,13 +587,16 @@ def timestamp_guard(timestamp_path, cooldown = timedelta(days=1)):
                             print(f"Unable to run: {func.__name__} too soon")
                             return
                     except Exception as e:
-                        print (f"Failed to parse timestamp, rerunning. Reason {e}")
+                        print(f"Failed to parse timestamp, rerunning. Reason {e}")
             result = func(*args, **kwargs)
             with open(timestamp_path, "w") as file:
                 file.write(now.isoformat())
             return result
+
         return wrapper
+
     return decorator
+
 
 @timestamp_guard("./data/timestamp_hist")
 def hist_update(path):
@@ -603,6 +605,7 @@ def hist_update(path):
     create_historical_table()
     populate_historical_database()
 
+
 @timestamp_guard("./data/timestamp_live", cooldown=timedelta(minutes=15))
 def live_update(path):
     if os.path.exists(path):
@@ -610,9 +613,11 @@ def live_update(path):
     create_live_table()
     populate_live_database()
 
-def update_dbs(hist_path = historical_db_path, live_path = live_db_path):
+
+def update_dbs(hist_path=historical_db_path, live_path=live_db_path):
     hist_update(hist_path)
     live_update(live_path)
+
 
 def populate_historical_database():
     res = mokaam_call()

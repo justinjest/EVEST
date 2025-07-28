@@ -10,7 +10,12 @@ from db_middleware import get_historical_item, get_db_size
 from mokaam_call import mokaam_call
 from buy_sell import flag_create, output_order_sheet
 from typeids import lookup_type_id
-from profit_tracker import Player, create_transaction_database, print_player, update_player
+from profit_tracker import (
+    Player,
+    create_transaction_database,
+    print_player,
+    update_player,
+)
 from set_preferences import setup_preferences
 from repl import repl_loop
 # from discordInit import bot_init
@@ -37,7 +42,6 @@ os.makedirs(data_folder, exist_ok=True)
 def init():
     if not os.path.exists(preference_path):
         setup_preferences()
-        print("Preferences created")
     try:
         load_preferences(preference_path)
     except:
@@ -55,8 +59,6 @@ def init():
             "sell_broker_fee": "0.015",
         }
         save_preferences(preference_path, preferences)
-    print("Preferences created")
-
     print("Preferences loaded.")
 
 
@@ -76,12 +78,14 @@ def startup_databases():
         create_transaction_database(transaction_db_path)
         print("Transaction table cleared.")
 
+
 def main():
     init()
     startup_databases()
     p = Player()
     print("Import complete")
-    print("In main loop")
     repl_loop()
+
+
 if __name__ == "__main__":
     main()

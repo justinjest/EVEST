@@ -11,23 +11,29 @@ import os
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
+
 def update_database():
     update_dbs()
+
 
 def produce_order_sheet():
     buy, sell = flag_create()
     output_order_sheet(buy, sell)
+
 
 def player_orders(p):
     buy, sell = flag_create()
     update_player(buy, sell, p)
     print_player(p)
 
+
 def update_preferences():
     setup_preferences()
 
+
 def quit_program():
     exit(0)
+
 
 def repl_loop():
     clear_screen()
@@ -38,14 +44,13 @@ def repl_loop():
         "2": produce_order_sheet,
         "3": lambda: player_orders(p),
         "4": update_preferences,
-        "5": quit_program
+        "5": quit_program,
     }
-
 
     while True:
         print("\n=== EVEST Main Menu ===")
         print("1) Update database")
-        print("2) Output buy and sell sheet")
+        print("2) Display market opportunities")
         print("3) Make transactions")
         print("4) Update preferences")
         print("5) Quit")

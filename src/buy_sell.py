@@ -81,6 +81,6 @@ def output_order_sheet(buy, sell):
     print("=========BUY OPPORTUNITIES=========")
     for i in buy:
         print(f"{lookup_type_id(i)}")
-    print("=========SELL OPPORTUNITIES=========")
+    print("\n=========SELL OPPORTUNITIES=========")
     for i in sell:
         print(f"{lookup_type_id(i)}")

@@ -38,11 +38,11 @@ When you run the file for the first time you will generate a preference file in 
 
 Updates databases so you're always looking at the newest possible information. Running this command will update your historical information if it's older than 1 day old, and your live information if it's older than 15 minutes.
 
-#### Produce order sheet
+#### Display market opportunities
 
 Returns a list of items to consider trading based on the criteria you set in your preferences.
 
-#### Make Transactions
+#### Make transactions
 
 If you want to do some EVE-style paper trading, hit this button! An imaginary player will player will buy and sell the items that are on your current order sheet. Come back later to see if you've made a profit!
 

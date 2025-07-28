@@ -171,6 +171,7 @@ class Response:
         # Neither an error or a response, must be handlded
         raise Exception("InvalidResponse")
 
+
 @retry_api_call()
 def mokaam_call() -> Response:
     region_id = get_preference("region_id")
@@ -178,24 +179,22 @@ def mokaam_call() -> Response:
     market_volume = get_preference("market_volume")
     api_url = f"https://mokaam.dk/API/market/query?type=items&regionid={region_id}&query=size_month>{market_size}&query=volume_month>{market_volume}"
     res = Response()
-    print(f"Pulling Mokaam API for region {region_id}")
+    print("Pulling historical data...")
 
     response = requests.get(api_url)
     print("Received data from API")
     if response.status_code == 200:
         try:
             raw_data = response.json()
-            print("Received raw JSON data")
             data = {item["typeid"]: item for item in raw_data}
-            print("Transformed data to dictionary")
 
             adapter = TypeAdapter(dict[int, TypeStats])
             try:
                 res.response = adapter.validate_python(data)
-                output_json = "./data/mokaam.json"
+                output_json = "./data/historicaldata.json"
                 with open(output_json, "w") as outfile:
                     json.dump(data, outfile, indent=4)
-                print(f"Validated data has been written to {output_json}")
+                print("Historical data loaded!")
             except Exception as e:
                 print("Validation error:", e)
         except json.JSONDecodeError as e:
@@ -210,5 +209,5 @@ if __name__ == "__main__":
     res = mokaam_call()
     val = res.get_val()
     if res.error is not None:
-        raise exception("Failed to load mokaam data")
+        raise exception("Failed to load historical data")
     print(f"{res.response}")
