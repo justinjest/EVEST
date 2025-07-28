@@ -85,9 +85,17 @@ def flag_create():
 
 
 def output_order_sheet(buy, sell):
+    buy_names = []
+    sell_names = []
     print("=========BUY OPPORTUNITIES=========")
     for i in buy:
-        print(f"{lookup_type_id(i)}")
+        name = lookup_type_id(i)
+        print(f"{name}")
+        buy_names.append(name)
     print("\n=========SELL OPPORTUNITIES=========")
     for i in sell:
-        print(f"{lookup_type_id(i)}")
+        name = lookup_type_id(i)
+        print(f"{name}")
+        sell_names.append(name)
+
+    return buy_names, sell_names

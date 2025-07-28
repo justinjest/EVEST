@@ -19,7 +19,7 @@ pyaml==25.7.0
 pyasn1==0.6.1
 pydantic==2.11.7
 pydantic_core==2.33.2
-pyperclip=1.9.0
+pyperclip==1.9.0
 requests==2.32.4
 rsa==4.9.1
 six==1.17.0
