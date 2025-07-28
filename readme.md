@@ -4,15 +4,15 @@
 
 ## So you wanna be space rich...
 
-![evest logo](/static/evest-logo.webp)
-
 EVE Online is known for it's hard-working ~~victims~~ players. Folks that will gladly spend hundreds of hours hacking away on a spreadsheet that will make them .01 ISK more than the next capsuleer frantically refreshing buy orders.
 
 It's no secret that mastering the market is the way to true pixel wealth in New Eden, but it's not easy.
 
 Or at least it wasn't.
 
-## Introducing EVEST: EVE Station Trader!
+## Introducing...
+
+![evest logo](/static/evest-logo.webp)
 
 EVEST monitors the market to let you know when an item in your chosen location is trading at a certain percentage below its usual price. When you're ready to make sweet ISK, you can generate a list of things currently trading lower than average. Log in, snap up the deals, and spin your pretty spaceships.
 
