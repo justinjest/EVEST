@@ -59,7 +59,7 @@ When you run the file for the first time you will generate a preference file in 
 
 - Display market opportunities
 
-> Returns a list of items to consider trading based on the criteria you set in your preferences.
+> Returns a list of items to consider trading based on the criteria you set in your preferences. You can copy these and paste them straight into your in-game market quickbar!
 
 - Make transactions
 
