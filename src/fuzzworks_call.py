@@ -103,7 +103,7 @@ def fuzzworks_call() -> Response:
 
     for o in range(0, len(clean_type_ids), chunk_size):
         temparray = clean_type_ids[o : min((o + chunk_size), len(typeid_list))]
-        time.sleep(0.1)
+        time.sleep(0.001)
         types = ",".join(map(str, temparray))
         api_url = api_url_base + types
 
