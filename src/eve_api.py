@@ -6,6 +6,7 @@ import sqlite3
 import pandas as pd
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime as dt
 
 def eve_inventory_call():
 
@@ -64,7 +65,7 @@ def get_live_data():
         return response.json()
 
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=100) as executor:
         futures = [executor.submit(fetch_page, page) for page in range(2, int(num_pages) + 1)]
         for future in as_completed(futures):
             try:
@@ -119,23 +120,60 @@ def  live_data_db(data):
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
 
-if __name__ == "__main__":
-    # TODO turn this into the promised fields using pandas before we write it.
-    df = pd.read_csv('data/test.csv')
-
-    buy = df[(df['is_buy_order'] == True)]
-    sell = df[(df['is_buy_order'] == False)]
-
-    grouped = buy.groupby('type_id')
+def generate_sell(df):
+    grouped = df.groupby('type_id')
+    print("grouped")
     summary = grouped.agg(
-        buy_max=('price', 'max'),
-        buy_min=('price', 'min'),
-        vwap=('price', lambda x: (x * buy.loc[x.index, 'volume_remain']).sum() / buy.loc[x.index, 'volume_remain'].sum()),
-        buy_median=('price', 'median'),
-        buy_stddev=('price', 'std'),
-        buy_volume=('volume_remain', 'sum'),
-        buy_order_count=('price', 'count')
-    )
+       sell_max=('price', 'max'),
+       sell_min=('price', 'min'),
+       sell_vwap=('price', lambda x: (x * df.loc[x.index, 'volume_remain']).sum() / df.loc[x.index, 'volume_remain'].sum()),
+       sell_median=('price', 'median'),
+       sell_stddev=('price', 'std'),
+       sell_volume=('volume_remain', 'sum'),
+       sell_order_count=('price', 'count')
+   )
+    print("Aggregated")
+
+    def compute_5_percent_avg(group):
+        group = group.sort_values(by='price', ascending=True)
+        total_volume = group['volume_remain'].sum()
+        cutoff = total_volume * 0.05
+
+        cum_volume = 0
+        weighted_total = 0
+        prices = group['price'].values
+        volumes = group['volume_remain'].values
+
+        for price, volume in zip(prices, volumes):
+            if cum_volume + volume <= cutoff:
+                weighted_total += price * volume
+                cum_volume += volume
+            else:
+                remaining = cutoff - cum_volume
+                weighted_total += price * remaining
+                break
+
+        return weighted_total / cutoff if cutoff > 0 else None
+
+    five_percent_sell_avg = grouped.apply(compute_5_percent_avg, include_groups=False)
+    five_percent_sell_avg.name = "five_percent_buy_avg"
+
+    # Combine
+    final_df = pd.concat([summary, five_percent_sell_avg], axis=1)
+    return final_df
+
+
+def generate_buy(df):
+    grouped = df.groupby('type_id')
+    summary = grouped.agg(
+       buy_max=('price', 'max'),
+       buy_min=('price', 'min'),
+       vwap=('price', lambda x: (x * df.loc[x.index, 'volume_remain']).sum() / df.loc[x.index, 'volume_remain'].sum()),
+       buy_median=('price', 'median'),
+       buy_stddev=('price', 'std'),
+       buy_volume=('volume_remain', 'sum'),
+       buy_order_count=('price', 'count')
+   )
 
 
     def compute_5_percent_avg(group):
@@ -159,12 +197,28 @@ if __name__ == "__main__":
 
         return weighted_total / cutoff if cutoff > 0 else None
 
-    five_percent_buy_avg = grouped.apply(compute_5_percent_avg)
+    five_percent_buy_avg = grouped.apply(compute_5_percent_avg, include_groups=False)
     five_percent_buy_avg.name = "five_percent_buy_avg"
 
     # Combine
     final_df = pd.concat([summary, five_percent_buy_avg], axis=1)
+    return final_df
 
-
-    print("Result")
-    print(final_df)
+if __name__ == "__main__":
+    # TODO turn this into the promised fields using pandas before we write it.
+    start_api = dt.now()
+    data = get_live_data()
+    print("Time elapsed for api: ", dt.now() - start_api)
+    start_db = dt.now()
+    live_data_db(data)
+    print("DB insertion: ", dt.now() - start_db)
+    df = pd.DataFrame(data)
+    buy = df[(df['is_buy_order'] == True)]
+    sell = df[(df['is_buy_order'] == False)]
+    start = dt.now()
+    print("Generating buy")
+    print(generate_buy(buy))
+    print("Generating sell")
+    print(generate_sell(sell))
+    print("Time elapsed: ", dt.now() - start)
+    print("Total: ", dt.now() - start_api)
