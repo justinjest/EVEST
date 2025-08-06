@@ -7,6 +7,7 @@ import pandas as pd
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime as dt
+from db_middleware import live_db_path, post_live_data
 
 def eve_inventory_call():
 
@@ -45,6 +46,7 @@ def create_db(database_path, table_name, database_scheme):
         print("Failed to open database:", e)
 
 def get_live_data():
+    print("Getting live data")
     url = "https://esi.evetech.net/markets/10000002/orders"
     headers = {
     "Accept-Language": "",
@@ -58,14 +60,13 @@ def get_live_data():
     data = response.json()
 
     def fetch_page(page):
-        print(f"Working on {page}")
         params = {"page": page}
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         return response.json()
 
 
-    with ThreadPoolExecutor(max_workers=100) as executor:
+    with ThreadPoolExecutor(max_workers=20) as executor:
         futures = [executor.submit(fetch_page, page) for page in range(2, int(num_pages) + 1)]
         for future in as_completed(futures):
             try:
@@ -122,7 +123,6 @@ def  live_data_db(data):
 
 def generate_sell(df):
     grouped = df.groupby('type_id')
-    print("grouped")
     summary = grouped.agg(
        sell_max=('price', 'max'),
        sell_min=('price', 'min'),
@@ -132,7 +132,6 @@ def generate_sell(df):
        sell_volume=('volume_remain', 'sum'),
        sell_order_count=('price', 'count')
    )
-    print("Aggregated")
 
     def compute_5_percent_avg(group):
         group = group.sort_values(by='price', ascending=True)
@@ -156,7 +155,7 @@ def generate_sell(df):
         return weighted_total / cutoff if cutoff > 0 else None
 
     five_percent_sell_avg = grouped.apply(compute_5_percent_avg, include_groups=False)
-    five_percent_sell_avg.name = "five_percent_buy_avg"
+    five_percent_sell_avg.name = "five_percent_sell_avg"
 
     # Combine
     final_df = pd.concat([summary, five_percent_sell_avg], axis=1)
@@ -168,7 +167,7 @@ def generate_buy(df):
     summary = grouped.agg(
        buy_max=('price', 'max'),
        buy_min=('price', 'min'),
-       vwap=('price', lambda x: (x * df.loc[x.index, 'volume_remain']).sum() / df.loc[x.index, 'volume_remain'].sum()),
+       buy_vwap=('price', lambda x: (x * df.loc[x.index, 'volume_remain']).sum() / df.loc[x.index, 'volume_remain'].sum()),
        buy_median=('price', 'median'),
        buy_stddev=('price', 'std'),
        buy_volume=('volume_remain', 'sum'),
@@ -206,19 +205,33 @@ def generate_buy(df):
 
 if __name__ == "__main__":
     # TODO turn this into the promised fields using pandas before we write it.
-    start_api = dt.now()
-    data = get_live_data()
-    print("Time elapsed for api: ", dt.now() - start_api)
-    start_db = dt.now()
-    live_data_db(data)
-    print("DB insertion: ", dt.now() - start_db)
-    df = pd.DataFrame(data)
-    buy = df[(df['is_buy_order'] == True)]
-    sell = df[(df['is_buy_order'] == False)]
+    ## start_api = dt.now()
+    ## data = get_live_data()
+    ## print("Time elapsed for api: ", dt.now() - start_api)
+    ## start_db = dt.now()
+    ## live_data_db(data)
+    ## print("DB insertion: ", dt.now() - start_db)
+    df = pd.read_csv('data/test.csv')
+    ## df = pd.DataFrame(data)
+    buy_data = df[(df['is_buy_order'] == True)]
+    sell_data = df[(df['is_buy_order'] == False)]
     start = dt.now()
-    print("Generating buy")
-    print(generate_buy(buy))
-    print("Generating sell")
-    print(generate_sell(sell))
-    print("Time elapsed: ", dt.now() - start)
-    print("Total: ", dt.now() - start_api)
+    ## print("Generating buy")
+    buy = generate_buy(buy_data)
+    print(buy)
+    ## print("Generating sell")
+    sell = generate_sell(sell_data)
+    print(sell)
+    ## print("Time elapsed: ", dt.now() - start)
+    ## print("Inserting buy sell data")
+    buy_sell = buy.join(sell)
+    print(buy_sell.values.tolist())
+    # Connect to SQLite (or create file)
+    conn = sqlite3.connect("data/test_buy_sell.db")
+
+    # Write to table 'orders' (creates table if it doesn't exist)
+    buy_sell.to_sql('orders', conn, if_exists='replace', index=True)
+
+    conn.close()
+
+    ## print("Total: ", dt.now() - start_api)
