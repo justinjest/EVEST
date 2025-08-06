@@ -203,35 +203,24 @@ def generate_buy(df):
     final_df = pd.concat([summary, five_percent_buy_avg], axis=1)
     return final_df
 
+def generate_buy_sell(data: json):
+   df = pd.DataFrame(data)
+   buy_data = df[(df['is_buy_order'] == True)]
+   sell_data = df[(df['is_buy_order'] == False)]
+   buy = generate_buy(buy_data)
+   sell = generate_sell(sell_data)
+   buy_sell = buy.join(sell)
+   conn = sqlite3.connect(live_db_path)
+   buy_sell.to_sql('orders', conn, if_exists='replace', index=True)
+   conn.close()
+
+
 if __name__ == "__main__":
-    # TODO turn this into the promised fields using pandas before we write it.
-    ## start_api = dt.now()
-    ## data = get_live_data()
-    ## print("Time elapsed for api: ", dt.now() - start_api)
-    ## start_db = dt.now()
-    ## live_data_db(data)
-    ## print("DB insertion: ", dt.now() - start_db)
-    df = pd.read_csv('data/test.csv')
-    ## df = pd.DataFrame(data)
-    buy_data = df[(df['is_buy_order'] == True)]
-    sell_data = df[(df['is_buy_order'] == False)]
-    start = dt.now()
-    ## print("Generating buy")
-    buy = generate_buy(buy_data)
-    print(buy)
-    ## print("Generating sell")
-    sell = generate_sell(sell_data)
-    print(sell)
-    ## print("Time elapsed: ", dt.now() - start)
-    ## print("Inserting buy sell data")
-    buy_sell = buy.join(sell)
-    print(buy_sell.values.tolist())
-    # Connect to SQLite (or create file)
-    conn = sqlite3.connect("data/test_buy_sell.db")
-
-    # Write to table 'orders' (creates table if it doesn't exist)
-    buy_sell.to_sql('orders', conn, if_exists='replace', index=True)
-
-    conn.close()
-
-    ## print("Total: ", dt.now() - start_api)
+    start_api = dt.now()
+    data = get_live_data()
+    print("Time elapsed for api: ", dt.now() - start_api)
+    start_db = dt.now()
+    live_data_db(data)
+    print("DB insertion: ", dt.now() - start_db)
+    generate_buy_sell(data)
+    print("Total: ", dt.now() - start_api)
