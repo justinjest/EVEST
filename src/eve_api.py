@@ -7,7 +7,8 @@ import pandas as pd
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime as dt
-from db_middleware import live_db_path, post_live_data
+from db_middleware import live_db_path, post_live_data, create_db
+from preferences import get_preference
 
 def eve_inventory_call():
 
@@ -35,19 +36,10 @@ def return_items_at_station(station_id, eve_inventory_json):
     print(eve_inventory_json)
 
 
-def create_db(database_path, table_name, database_scheme):
-    schema = f"CREATE TABLE IF NOT EXISTS {table_name}(\n{database_scheme});"
-    try:
-        with sqlite3.connect(database_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute(schema)
-            conn.commit()
-    except sqlite3.OperationalError as e:
-        print("Failed to open database:", e)
-
 def get_live_data():
     print("Getting live data")
-    url = "https://esi.evetech.net/markets/10000002/orders"
+    region_id = get_preference("region_id")
+    url = f"https://esi.evetech.net/markets/{region_id}/orders"
     headers = {
     "Accept-Language": "",
     "If-None-Match": "",
@@ -91,9 +83,9 @@ def  live_data_db(data):
     volume_remain INTEGER,
     volume_total INTEGER
     """
-    create_db("./data/test.db", "test", scheme)
+    create_db(live_db_path, "live_data", scheme)
 
-    insert_sql = """INSERT OR REPLACE INTO test (
+    insert_sql = """INSERT OR REPLACE INTO live_data(
     order_id, duration, is_buy_order, issued, location_id, min_volume, price,
     range, system_id, type_id, volume_remain, volume_total
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
@@ -114,7 +106,7 @@ def  live_data_db(data):
     ]
 
     try:
-        with sqlite3.connect("./data/test.db") as conn:
+        with sqlite3.connect(live_db_path) as conn:
             cursor = conn.cursor()
             cursor.executemany(insert_sql, values)
             conn.commit()
@@ -216,11 +208,8 @@ def generate_buy_sell(data: json):
 
 
 if __name__ == "__main__":
-    start_api = dt.now()
+    # This is how to get live data, and secondary backup for
+    # record keeping
     data = get_live_data()
-    print("Time elapsed for api: ", dt.now() - start_api)
-    start_db = dt.now()
     live_data_db(data)
-    print("DB insertion: ", dt.now() - start_db)
     generate_buy_sell(data)
-    print("Total: ", dt.now() - start_api)
