@@ -167,7 +167,7 @@ if __name__ == "__main__":
             print("Failed to open database:", e)
 
 
-    url = "https://esi.evetech.net/markets/10000003/orders"
+    url = f"https://esi.evetech.net/markets/{get_preferences(region_id)}/orders"
 
     querystring = {"order_type":"buy"}
 
