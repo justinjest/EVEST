@@ -55,25 +55,25 @@ def flag_create():
         hist_sell = historical[avg_max_col]
         hist_buy = historical[avg_min_col]
 
-        spread = float(live["sell_min"]) - float(live["buy_weighted_average"])
-        buy_avg_now = live["buy_weighted_average"]
-        sell_avg_now = live["sell_weighted_average"]
+        spread = float(live["sell_percentile"]) - float(live["buy_percentile"])
+        buy_pct_now = live["buy_percentile"]
+        sell_pct_now = live["sell_percentile"]
         buy_flag = (
-            float(buy_avg_now * (1.0 + buy_fee)) < (hist_buy - hist_std_dev) * 0.9
+            float(buy_pct_now * (1.0 + buy_fee)) < (hist_buy - hist_std_dev) * 0.9
             and spread > hist_spread
             and float(live["buy_stddev"]) < (hist_std_dev * 1.5)
             and float(live["buy_volume"]) > (float(live["sell_volume"]) / 5)
             and (
-                (float(live["sell_min"]) * (1.0 - sell_fee - sales_tax))
-                - (float(live["buy_max"]) * (1.0 + buy_fee))
+                sell_pct_now * (1.0 - sell_fee - sales_tax)
+                - buy_pct_now * (1.0 + buy_fee)
             )
-            / float(live["buy_max"])
+            / buy_pct_now
             * 100
             > 5.0
         )
 
         sell_flag = (
-            float(sell_avg_now * (1.0 - sell_fee - sales_tax))
+            float(sell_pct_now * (1.0 - sell_fee - sales_tax))
             >= (hist_sell + hist_std_dev) * 1.2
             and spread > hist_spread
             and float(live["sell_volume"]) > (float(live["buy_volume"]) / 5)
